@@ -28,17 +28,15 @@
             padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); 
         }
 
-        /* 標題與警車 */
         .main-title {
             color: var(--main-rose); font-weight: 900; font-size: 2.6rem;
             margin: 0 0 25px 0; display: flex; align-items: center; gap: 15px;
         }
         .police-car { font-size: 3.5rem; -webkit-text-fill-color: initial; }
 
-        /* --- 核心佈局修正：改用 Grid 確保寬度 --- */
         .content-layout { 
             display: grid; 
-            grid-template-columns: 280px 1fr; /* 強制設定左側寬度，其餘給右側 */
+            grid-template-columns: 280px 1fr; 
             gap: 30px; margin-bottom: 30px; 
         }
 
@@ -54,7 +52,6 @@
             margin-bottom: 12px; border-left: 6px solid var(--main-rose); padding-left: 10px;
         }
 
-        /* 地圖區域：強制設定最小高度與寬度 */
         #map-container { 
             width: 100%; height: 750px; border-radius: 15px; overflow: hidden; 
             border: 5px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -62,7 +59,6 @@
         }
         #map { width: 100%; height: 100%; background: #eee; z-index: 1; }
 
-        /* 輸入框與選單樣式 */
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #666; }
         input, select { 
@@ -71,7 +67,6 @@
         }
         input:focus, select:focus { border-color: var(--main-rose); outline: none; background: #FFFBFB; }
 
-        /* 按鈕設計 */
         .btn {
             border: none; border-radius: 8px; padding: 15px; font-weight: 800;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -93,16 +88,15 @@
         th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); }
         td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
 
-        /* RWD 手機版切換 */
         @media (max-width: 992px) {
-            .content-layout { grid-template-columns: 1fr; } /* 取消並排，改為上下 */
+            .content-layout { grid-template-columns: 1fr; }
             #map-container { height: 450px; order: -1; }
             .form-panel { width: 100%; }
             .main-title { font-size: 1.8rem; flex-direction: column; text-align: center; }
             th:nth-child(5), td:nth-child(5), th:nth-child(6), td:nth-child(6) { display: none; }
         }
 
-        .tip-box { background: #FFF9F9; color: #A54354; padding: 10px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; }
+        .tip-box { background: #FFF9F9; color: #A54354; padding: 12px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; }
         .cat-tag { padding: 4px 8px; border-radius: 4px; background: var(--main-rose-light); color: var(--main-rose-dark); font-weight: bold; }
         .author { font-size: 12px; color: #999; text-align: right; margin-top: 50px; }
     </style>
@@ -165,7 +159,6 @@
                         <option value="永康區"> <option value="東區"> <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
                     </datalist>
                 </div>
-                <div class="tip-box">💡 點選後地圖自動飛往該區。</div>
             </div>
 
             <div class="card">
@@ -188,7 +181,7 @@
     </div>
 
     <div class="status-bar">
-        <div><b>📊 已採集數量：</b> <b id="dataCount" style="color:var(--main-rose); font-size: 1.5rem;">0</b> 筆</div>
+        <div>累積數量：<b id="dataCount" style="color:var(--main-rose); font-size: 1.5rem;">0</b> 筆</div>
         <div id="backup-status" style="color:var(--main-rose); font-weight:bold;"></div>
         <div class="btn-group" style="display: flex; gap: 10px;">
             <button class="btn btn-clear" onclick="clearData()">🗑 清空</button>
@@ -213,7 +206,7 @@
         </table>
     </div>
 
-    <div class="author">開發作者：NIENCHEN TSAI | 專供臺南市政府警察局交通大數據分析</div>
+    <div class="author">作者 NIENCHEN TSAI | 臺南市政府警察局交通大數據分析</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -232,21 +225,16 @@
         "永康區": [23.025, 120.254], "東區": [22.985, 120.224], "南區": [22.960, 120.183], "北區": [23.006, 120.211], "安南區": [23.048, 120.185], "安平區": [23.001, 120.161], "中西區": [22.991, 120.202]
     };
 
-    // 確保視窗完全載入才開始
     window.addEventListener('load', function() {
         initMap();
         loadBackup();
     });
 
     function initMap() {
-        // 設定地圖並強制重新整理尺寸
         map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([22.997, 120.211], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         currentMarker = L.marker([0,0]);
-        
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
-        
-        // 關鍵：每隔 200ms 檢查地圖尺寸，直到地圖完全顯現
         let checkSize = setInterval(() => {
             map.invalidateSize();
             if (document.getElementById('map').offsetWidth > 0) clearInterval(checkSize);
@@ -265,29 +253,29 @@
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v63', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v64', JSON.stringify(dataList));
         document.getElementById('backup-status').innerText = '已保存 ✓';
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v63');
+        const saved = localStorage.getItem('tainan_police_v64');
         if (saved) { dataList = JSON.parse(saved); renderTable(); }
     }
 
     function clearData() {
-        if (confirm('確定清空？')) { dataList = []; localStorage.removeItem('tainan_police_v63'); renderTable(); }
+        if (confirm('確定清空？')) { dataList = []; localStorage.removeItem('tainan_police_v64'); renderTable(); }
     }
 
     function addData() {
         const unitSelect = document.getElementById('unit');
         const unitRaw = unitSelect.options[unitSelect.selectedIndex].text;
-        const unit = unitRaw.split('.')[1] || unitRaw; // 移除前面的序號
+        const unit = unitRaw.split('.')[1] || unitRaw;
         const category = document.getElementById('category').value;
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
 
-        if (!category || !loc || !coords) { alert("資訊不完整，請填寫名稱並點選地圖！"); return; }
+        if (!category || !loc || !coords) { alert("資訊不完整！"); return; }
         const parts = coords.split(', ');
         dataList.push({ unit, category, loc, lat: parts[0], lng: parts[1] });
         renderTable(); saveBackup();
@@ -318,12 +306,27 @@
         dataList.splice(index, 1); renderTable(); saveBackup();
     }
 
+    // --- 關鍵修正：將 Excel 欄位對應為中文 ---
     function exportToExcel() {
         if (dataList.length === 0) return;
-        const ws = XLSX.utils.json_to_sheet(dataList);
+        
+        // 將英文 Key 對應為中文標題
+        const exportData = dataList.map((item, index) => ({
+            "編號": index + 1,
+            "單位": item.unit,
+            "勤務項目": item.category,
+            "位置描述": item.loc,
+            "緯度": item.lat,
+            "經度": item.lng
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "採集結果");
-        XLSX.writeFile(wb, `臺南座標採集_${new Date().getTime()}.xlsx`);
+        
+        const now = new Date();
+        const dateStr = now.getFullYear() + (now.getMonth()+1).toString().padStart(2, '0') + now.getDate().toString().padStart(2, '0');
+        XLSX.writeFile(wb, `臺南座標採集_${dateStr}.xlsx`);
     }
 </script>
 
