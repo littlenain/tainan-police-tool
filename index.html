@@ -14,7 +14,6 @@
             --text-color: #2f3542;
             --accent-pink: #e84393;
             --success-green: #20bf6b;
-            --warning-orange: #f39c12;
         }
         body { font-family: "Microsoft JhengHei", "Heiti TC", sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
@@ -34,9 +33,6 @@
         label { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; color: #57606f; font-weight: 600; font-size: 0.95rem; }
         input, select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         
-        /* 強制選擇的提示色 */
-        select:invalid { color: #888; }
-
         .tip-important { font-size: 0.8rem; color: var(--accent-pink); font-weight: bold; margin-top: 5px; line-height: 1.4; display: block; }
         #backup-status { font-size: 0.8rem; color: var(--success-green); font-weight: bold; margin-bottom: 10px; display: none; }
 
@@ -48,7 +44,7 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 14px; }
         th { background: #f7f9fc; font-weight: 700; }
         
-        .cat-tag { padding: 2px 8px; border-radius: 4px; font-size: 0.85em; background: #eee; color: #666; font-weight: bold; }
+        .cat-tag { padding: 2px 8px; border-radius: 4px; font-size: 0.85em; background: #e8f0fe; color: #1a73e8; font-weight: bold; border: 1px solid #d2e3fc; }
 
         .author { font-size: 12px; color: #a4b0be; text-align: right; margin-top: 40px; font-style: italic; }
     </style>
@@ -89,9 +85,9 @@
             </div>
 
             <div class="form-group">
-                <label>處所分類 (強制選擇)</label>
+                <label>勤務項目(必填)</label>
                 <select id="category" required>
-                    <option value="" disabled selected>請選擇分類...</option>
+                    <option value="" disabled selected>請選擇項目...</option>
                     <option value="專責守望">專責守望</option>
                     <option value="交通稽查">交通稽查</option>
                     <option value="巡邏兼守望">巡邏兼守望</option>
@@ -102,12 +98,12 @@
 
             <div class="form-group">
                 <label>位置描述 (Enter 新增)</label>
-                <input type="text" id="locName" placeholder="如：北區西門路口" onkeypress="handleKeyPress(event)">
+                <input type="text" id="locName" placeholder="如：北區西門路口" onkeydown="handleKeyPress(event)">
             </div>
             
             <div class="form-group">
-                <label>🔍 地圖模糊搜尋 (Enter 新增)</label>
-                <input type="text" id="searchBox" placeholder="輸入路名後按 Enter..." onkeypress="searchMap(event)">
+                <label>🔍 地圖模糊搜尋 (Enter 搜尋)</label>
+                <input type="text" id="searchBox" placeholder="輸入地點或路名後按 Enter..." onkeydown="searchMap(event)">
                 <b class="tip-important">※ 提示：若搜不到，請改搜「單一路名」後點擊地圖。</b>
             </div>
 
@@ -139,7 +135,7 @@
             <tr>
                 <th style="width: 50px;">編號</th>
                 <th style="width: 110px;">單位</th>
-                <th style="width: 120px;">分類</th>
+                <th style="width: 120px;">勤務項目</th>
                 <th>位置描述</th>
                 <th style="width: 100px;">緯度</th>
                 <th style="width: 100px;">經度</th>
@@ -165,8 +161,15 @@
     };
 
     function initMap() {
-        map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([23.000, 120.215], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        map = L.map('map', { 
+            maxBounds: TAINAN_BOUNDS, 
+            maxBoundsViscosity: 1.0 
+        }).setView([23.000, 120.215], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            attribution: '© OpenStreetMap' 
+        }).addTo(map);
+
         currentMarker = L.marker([0,0]);
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
     }
@@ -174,19 +177,48 @@
     function updateMarker(lat, lng) {
         if (!hasClicked) { currentMarker.addTo(map); hasClicked = true; }
         currentMarker.setLatLng([lat, lng]);
-        currentMarker.bindPopup(`選取位置：<br>${lat}, ${lng}`).openPopup();
+        currentMarker.bindPopup(`已標定座標：<br>${lat}, ${lng}`).openPopup();
         document.getElementById('coords').value = lat + ", " + lng;
     }
 
+    // 修復後的地圖搜尋功能
+    async function searchMap(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // 防止可能的表單預設動作
+            const query = document.getElementById('searchBox').value.trim();
+            if (!query) return;
+            
+            try {
+                // 加強搜尋邏輯：自動補上台南市，並限定搜尋範圍
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=台南市${query}&bounded=1&viewbox=120.03,23.41,120.65,22.88&limit=1`;
+                const response = await fetch(url);
+                const results = await response.json();
+                
+                if (results && results.length > 0) {
+                    const best = results[0];
+                    const lat = parseFloat(best.lat).toFixed(6);
+                    const lon = parseFloat(best.lon).toFixed(6);
+                    map.setView([lat, lon], 17);
+                    updateMarker(lat, lon);
+                } else {
+                    alert("抱歉，地圖搜尋不到「" + query + "」。\n請嘗試輸入更簡單的路名。");
+                }
+            } catch (error) {
+                console.error("搜尋錯誤:", error);
+                alert("搜尋連線逾時，請檢查網路連線或稍後再試。");
+            }
+        }
+    }
+
     function saveBackup() {
-        localStorage.setItem('tainan_police_backup_v35', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v36', JSON.stringify(dataList));
         const status = document.getElementById('backup-status');
         status.style.display = 'block';
         status.innerText = `已自動備份 (${new Date().toLocaleTimeString()}) ✓`;
     }
 
     function loadBackup() {
-        const savedData = localStorage.getItem('tainan_police_backup_v35');
+        const savedData = localStorage.getItem('tainan_police_v36');
         if (savedData) {
             const parsed = JSON.parse(savedData);
             if (parsed.length > 0) {
@@ -201,25 +233,9 @@
     function clearData() {
         if (confirm('確定清空所有資料？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_backup_v35');
+            localStorage.removeItem('tainan_police_v36');
             renderTable();
             document.getElementById('backup-status').style.display = 'none';
-        }
-    }
-
-    async function searchMap(event) {
-        if (event.key === 'Enter') {
-            const query = document.getElementById('searchBox').value;
-            if (!query) return;
-            try {
-                const response = await fetch("https://nominatim.openstreetmap.org/search?format=json&q=台南市 " + query + "&bounded=1&viewbox=120.03,23.41,120.65,22.88");
-                const results = await response.json();
-                if (results.length > 0) {
-                    const best = results[0];
-                    map.setView([best.lat, best.lon], 17);
-                    updateMarker(parseFloat(best.lat).toFixed(6), parseFloat(best.lon).toFixed(6));
-                }
-            } catch (e) { console.error(e); }
         }
     }
 
@@ -233,9 +249,8 @@
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
 
-        // 強制檢查分類是否選擇
-        if (!category) { alert("【請選擇處所分類】\n這是必填項目，以利後續數據分析。"); return; }
-        if (!loc || !coords) { alert("請填寫位置描述並在『地圖上點擊』取得座標。"); return; }
+        if (!category) { alert("請選擇【勤務項目】。"); return; }
+        if (!loc || !coords) { alert("請填寫位置描述並在地圖上點選座標。"); return; }
 
         const parts = coords.split(', ');
         dataList.push({ unit, category, loc, lat: parts[0], lng: parts[1] });
@@ -243,7 +258,6 @@
         renderTable();
         saveBackup();
         
-        // 重設輸入 (單位與分類保持選取狀態，方便連續輸入)
         document.getElementById('locName').value = '';
         document.getElementById('searchBox').value = '';
         document.getElementById('coords').value = '';
@@ -274,11 +288,11 @@
     }
 
     function exportToExcel() {
-        if (dataList.length === 0) { alert("清單中無資料"); return; }
+        if (dataList.length === 0) { alert("無資料可匯出"); return; }
         const exportData = dataList.map((item, index) => ({
             "編號": index + 1,
             "單位": item.unit,
-            "分類": item.category,
+            "勤務項目": item.category,
             "位置": item.loc,
             "緯度": item.lat,
             "經度": item.lng
