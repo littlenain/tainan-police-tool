@@ -103,7 +103,7 @@
             
             <div class="form-group">
                 <label>🔍 地圖模糊搜尋 (Enter 搜尋)</label>
-                <input type="text" id="searchBox" placeholder="輸入地點或路名後按 Enter..." onkeydown="searchMap(event)">
+                <input type="text" id="searchBox" placeholder="輸入地點或路名後按 Enter..." onkeydown="handleSearchEnter(event)">
                 <b class="tip-important">※ 提示：若搜不到，請改搜「單一路名」後點擊地圖。</b>
             </div>
 
@@ -153,6 +153,7 @@
     let dataList = [];
     let map, currentMarker;
     let hasClicked = false;
+    // 台南大約範圍 (Nominatim 使用)
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
 
     window.onload = function() {
@@ -181,44 +182,65 @@
         document.getElementById('coords').value = lat + ", " + lng;
     }
 
-    // 修復後的地圖搜尋功能
-    async function searchMap(event) {
+    // --- 強化版搜尋功能 ---
+    function handleSearchEnter(event) {
         if (event.key === 'Enter') {
-            event.preventDefault(); // 防止可能的表單預設動作
-            const query = document.getElementById('searchBox').value.trim();
-            if (!query) return;
-            
-            try {
-                // 加強搜尋邏輯：自動補上台南市，並限定搜尋範圍
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=台南市${query}&bounded=1&viewbox=120.03,23.41,120.65,22.88&limit=1`;
-                const response = await fetch(url);
-                const results = await response.json();
-                
-                if (results && results.length > 0) {
-                    const best = results[0];
-                    const lat = parseFloat(best.lat).toFixed(6);
-                    const lon = parseFloat(best.lon).toFixed(6);
-                    map.setView([lat, lon], 17);
-                    updateMarker(lat, lon);
-                } else {
-                    alert("抱歉，地圖搜尋不到「" + query + "」。\n請嘗試輸入更簡單的路名。");
-                }
-            } catch (error) {
-                console.error("搜尋錯誤:", error);
-                alert("搜尋連線逾時，請檢查網路連線或稍後再試。");
-            }
+            event.preventDefault();
+            searchMap();
         }
     }
 
+    async function searchMap() {
+        const searchInput = document.getElementById('searchBox');
+        const query = searchInput.value.trim();
+        if (!query) return;
+
+        // UI 反饋：變色代表正在搜尋
+        searchInput.style.backgroundColor = "#fff9db";
+
+        try {
+            // 使用 encodeURIComponent 確保中文編碼正確
+            // 加上台南市關鍵字，並限定 viewbox 範圍
+            const encodedQuery = encodeURIComponent("台南市 " + query);
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&bounded=1&viewbox=120.03,23.41,120.65,22.88&limit=1`;
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Accept-Language': 'zh-TW,zh;q=0.9'
+                }
+            });
+            
+            if (!response.ok) throw new Error("網路請求失敗");
+            
+            const results = await response.json();
+            
+            if (results && results.length > 0) {
+                const best = results[0];
+                const lat = parseFloat(best.lat).toFixed(6);
+                const lon = parseFloat(best.lon).toFixed(6);
+                map.setView([lat, lon], 17);
+                updateMarker(lat, lon);
+            } else {
+                alert("找不到地點：『" + query + "』\n\n小撇步：\n1. 只輸入路名 (如: 西門路)\n2. 檢查字是否有誤");
+            }
+        } catch (error) {
+            console.error("搜尋發生錯誤:", error);
+            alert("目前無法連線至搜尋服務，請手動在地圖上選取位置。");
+        } finally {
+            searchInput.style.backgroundColor = ""; // 恢復顏色
+        }
+    }
+
+    // --- 備份功能 ---
     function saveBackup() {
-        localStorage.setItem('tainan_police_v36', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v37', JSON.stringify(dataList));
         const status = document.getElementById('backup-status');
         status.style.display = 'block';
         status.innerText = `已自動備份 (${new Date().toLocaleTimeString()}) ✓`;
     }
 
     function loadBackup() {
-        const savedData = localStorage.getItem('tainan_police_v36');
+        const savedData = localStorage.getItem('tainan_police_v37');
         if (savedData) {
             const parsed = JSON.parse(savedData);
             if (parsed.length > 0) {
@@ -233,7 +255,7 @@
     function clearData() {
         if (confirm('確定清空所有資料？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v36');
+            localStorage.removeItem('tainan_police_v37');
             renderTable();
             document.getElementById('backup-status').style.display = 'none';
         }
