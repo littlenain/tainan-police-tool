@@ -53,7 +53,7 @@
         }
 
         .form-panel { 
-            width: 280px; 
+            width: 265px; 
             flex-shrink: 0; 
             display: flex;
             flex-direction: column;
@@ -65,7 +65,6 @@
             border: 1.5px solid #EAEAEA; 
             border-radius: 12px; 
             padding: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
             box-sizing: border-box;
         }
 
@@ -101,7 +100,6 @@
             font-size: 17px; 
             color: var(--text-color);
             box-sizing: border-box; 
-            transition: border-color 0.3s;
         }
         input:focus, select:focus { border-color: var(--main-rose); outline: none; background: #FFFBFB; }
 
@@ -137,7 +135,7 @@
         }
 
         .table-container { width: 100%; overflow-x: auto; border-radius: 10px; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
         th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); }
         td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
 
@@ -155,7 +153,7 @@
         }
 
         .author { font-size: 12px; color: #999; text-align: right; margin-top: 50px; }
-        .tip-box { background: #FFF9F9; color: #A54354; padding: 12px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; }
+        .tip-box { background: #FFF9F9; color: #A54354; padding: 10px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; }
         .cat-tag { padding: 4px 8px; border-radius: 4px; background: var(--main-rose-light); color: var(--main-rose-dark); font-weight: bold; font-size: 0.9rem; }
     </style>
 </head>
@@ -171,23 +169,23 @@
                 <div class="form-group">
                     <label>單位名稱</label>
                     <select id="unit">
-                        <option value="新營分局">1.新營分局</option>
-                        <option value="白河分局">2.白河分局</option>
-                        <option value="麻豆分局">3.麻豆分局</option>
-                        <option value="佳里分局">4.佳里分局</option>
-                        <option value="學甲分局">5.學甲分局</option>
-                        <option value="善化分局">6.善化分局</option>
-                        <option value="新化分局">7.新化分局</option>
-                        <option value="歸仁分局">8.歸仁分局</option>
-                        <option value="玉井分局">9.玉井分局</option>
-                        <option value="永康分局">10.永康分局</option>
-                        <option value="第一分局">11.第一分局</option>
-                        <option value="第二分局">12.第二分局</option>
-                        <option value="第三分局">13.第三分局</option>
-                        <option value="第四分局">14.第四分局</option>
-                        <option value="第五分局">15.第五分局</option>
-                        <option value="第六分局">16.第六分局</option>
-                        <option value="交通警察大隊">17.交通警察大隊</option>
+                        <option value="1.新營分局">1.新營分局</option>
+                        <option value="2.白河分局">2.白河分局</option>
+                        <option value="3.麻豆分局">3.麻豆分局</option>
+                        <option value="4.佳里分局">4.佳里分局</option>
+                        <option value="5.學甲分局">5.學甲分局</option>
+                        <option value="6.善化分局">6.善化分局</option>
+                        <option value="7.新化分局">7.新化分局</option>
+                        <option value="8.歸仁分局">8.歸仁分局</option>
+                        <option value="9.玉井分局">9.玉井分局</option>
+                        <option value="10.永康分局">10.永康分局</option>
+                        <option value="11.第一分局">11.第一分局</option>
+                        <option value="12.第二分局">12.第二分局</option>
+                        <option value="13.第三分局">13.第三分局</option>
+                        <option value="14.第四分局">14.第四分局</option>
+                        <option value="15.第五分局">15.第五分局</option>
+                        <option value="16.第六分局">16.第六分局</option>
+                        <option value="17.交通警察大隊">17.交通警察大隊</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -204,30 +202,27 @@
             </div>
 
             <div class="card">
-                <div class="card-header">2. 區域定位</div>
+                <div class="card-header">2. 行政區搜尋</div>
                 <div class="form-group">
-                    <label>輸入行政區搜尋 (填空式)</label>
-                    <input list="districts" id="districtSearch" placeholder="例如：佳里區" oninput="handleDistrictSearch()">
+                    <label>輸入區名 (如:佳里)</label>
+                    <input type="text" id="districtInput" list="districts" placeholder="輸入後點選即可跳轉" oninput="handleDistrictInput()">
                     <datalist id="districts">
-                        <option value="新營區"> <option value="鹽水區"> <option value="白河區"> <option value="柳營區">
-                        <option value="後壁區"> <option value="東山區"> <option value="麻豆區"> <option value="下營區">
-                        <option value="六甲區"> <option value="官田區"> <option value="大內區"> <option value="佳里區">
-                        <option value="學甲區"> <option value="西港區"> <option value="七股區"> <option value="將軍區">
-                        <option value="北門區"> <option value="新化區"> <option value="善化區"> <option value="新市區">
-                        <option value="安定區"> <option value="山上區"> <option value="玉井區"> <option value="楠西區">
-                        <option value="南化區"> <option value="左鎮區"> <option value="仁德區"> <option value="歸仁區">
-                        <option value="關廟區"> <option value="龍崎區"> <option value="永康區"> <option value="東區">
-                        <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
+                        <option value="新營區"> <option value="鹽水區"> <option value="白河區"> <option value="柳營區"> <option value="後壁區"> <option value="東山區">
+                        <option value="麻豆區"> <option value="下營區"> <option value="六甲區"> <option value="官田區"> <option value="大內區"> <option value="佳里區">
+                        <option value="學甲區"> <option value="西港區"> <option value="七股區"> <option value="將軍區"> <option value="北門區"> <option value="新化區">
+                        <option value="善化區"> <option value="新市區"> <option value="安定區"> <option value="山上區"> <option value="玉井區"> <option value="楠西區">
+                        <option value="南化區"> <option value="左鎮區"> <option value="仁德區"> <option value="歸仁區"> <option value="關廟區"> <option value="龍崎區">
+                        <option value="永康區"> <option value="東區"> <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
                     </datalist>
                 </div>
-                <div class="tip-box">💡 輸入後選擇區域，地圖將自動跳轉。</div>
+                <div class="tip-box">💡 輸入區名後點擊地圖定點。</div>
             </div>
 
             <div class="card">
                 <div class="card-header">3. 命名與儲存</div>
                 <div class="form-group">
                     <label>位置描述</label>
-                    <input type="text" id="locName" placeholder="如：文化路與安北路口..." onkeydown="if(event.key==='Enter') addData()">
+                    <input type="text" id="locName" placeholder="如：路口名稱..." onkeydown="if(event.key==='Enter') addData()">
                 </div>
                 <div class="form-group">
                     <label>📍 座標數值</label>
@@ -243,8 +238,8 @@
     </div>
 
     <div class="status-bar">
-        <div>累積數量：<b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> / 100 筆</div>
-        <div id="backup-status"></div>
+        <div>累積數量：<b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> 筆</div>
+        <div id="backup-status" style="color:var(--main-rose); font-weight:bold;"></div>
         <div class="btn-group" style="display: flex; gap: 10px;">
             <button class="btn btn-clear" onclick="clearData()">🗑 清空</button>
             <button class="btn btn-export" onclick="exportToExcel()">📥 匯出 Excel</button>
@@ -268,7 +263,7 @@
         </table>
     </div>
 
-    <div class="author">開發作者：NIENCHEN TSAI | 專供臺南市政府警察局交通大數據分析</div>
+    <div class="author">開發作者：NIENCHEN TSAI | 臺南市政府警察局交通大數據分析</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -278,8 +273,75 @@
     let hasClicked = false;
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
 
-    // 臺南 37 區座標資料庫
+    // 臺南 37 區座標字典
     const districtCoords = {
-        "新營區": [23.2995, 120.3159], "鹽水區": [23.3101, 120.2662], "白河區": [23.3512, 120.4158], "柳營區": [23.2105, 120.3168],
-        "後壁區": [23.3283, 120.3732], "東山區": [23.2711, 120.4042], "麻豆區": [23.1819, 120.2523], "下營區": [23.2185, 120.2483],
-        "六甲區": [23.2255, 120.3875], "官田區": [23.1539, 120
+        "新營區": [23.308, 120.317], "鹽水區": [23.320, 120.266], "白河區": [23.351, 120.415], "柳營區": [23.277, 120.311], "後壁區": [23.365, 120.362], "東山區": [23.323, 120.404],
+        "麻豆區": [23.181, 120.252], "下營區": [23.223, 120.263], "六甲區": [23.231, 120.347], "官田區": [23.181, 120.318], "大內區": [23.119, 120.402], "佳里區": [23.161, 120.176],
+        "學甲區": [23.232, 120.180], "西港區": [23.123, 120.203], "七股區": [23.141, 120.138], "將軍區": [23.203, 120.154], "北門區": [23.268, 120.124], "新化區": [23.033, 120.334],
+        "善化區": [23.131, 120.295], "新市區": [23.078, 120.301], "安定區": [23.121, 120.236], "山上區": [23.102, 120.354], "玉井區": [23.125, 120.463], "楠西區": [23.174, 120.512],
+        "南化區": [23.045, 120.543], "左鎮區": [23.012, 120.415], "仁德區": [22.971, 120.252], "歸仁區": [22.968, 120.285], "關廟區": [22.961, 120.328], "龍崎區": [22.965, 120.360],
+        "永康區": [23.025, 120.254], "東區": [22.985, 120.224], "南區": [22.960, 120.183], "北區": [23.006, 120.211], "安南區": [23.048, 120.185], "安平區": [23.001, 120.161], "中西區": [22.991, 120.202]
+    };
+
+    window.onload = function() {
+        initMap();
+        loadBackup();
+    };
+
+    function initMap() {
+        map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([22.997, 120.211], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        currentMarker = L.marker([0,0]);
+        map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
+        setTimeout(() => { map.invalidateSize(); }, 500);
+    }
+
+    function updateMarker(lat, lng) {
+        if (!hasClicked) { currentMarker.addTo(map); hasClicked = true; }
+        currentMarker.setLatLng([lat, lng]);
+        document.getElementById('coords').value = lat + ", " + lng;
+    }
+
+    // --- 智慧行政區跳轉 ---
+    function handleDistrictInput() {
+        const val = document.getElementById('districtInput').value;
+        if (districtCoords[val]) {
+            map.setView(districtCoords[val], 15);
+        }
+    }
+
+    function saveBackup() {
+        localStorage.setItem('tainan_police_v62', JSON.stringify(dataList));
+        document.getElementById('backup-status').innerText = '已自動保存';
+    }
+
+    function loadBackup() {
+        const saved = localStorage.getItem('tainan_police_v62');
+        if (saved) { dataList = JSON.parse(saved); renderTable(); }
+    }
+
+    function clearData() {
+        if (confirm('確定清空？')) { dataList = []; localStorage.removeItem('tainan_police_v62'); renderTable(); }
+    }
+
+    function addData() {
+        const unit = document.getElementById('unit').value;
+        const category = document.getElementById('category').value;
+        const loc = document.getElementById('locName').value.trim();
+        const coords = document.getElementById('coords').value;
+        if (!category || !loc || !coords) { alert("資訊不完整！"); return; }
+        const parts = coords.split(', ');
+        dataList.push({ unit, category, loc, lat: parts[0], lng: parts[1] });
+        renderTable(); saveBackup();
+        document.getElementById('locName').value = '';
+        document.getElementById('coords').value = '';
+        if(hasClicked) { map.removeLayer(currentMarker); hasClicked = false; }
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('dataBody');
+        tbody.innerHTML = '';
+        dataList.forEach((item, i) => {
+            tbody.innerHTML += `<tr>
+                <td>${i+1}</td>
+                <td><b>${item.unit}</b>
