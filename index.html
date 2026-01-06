@@ -53,7 +53,7 @@
         }
 
         .form-panel { 
-            width: 265px; 
+            width: 280px; 
             flex-shrink: 0; 
             display: flex;
             flex-direction: column;
@@ -137,7 +137,7 @@
         }
 
         .table-container { width: 100%; overflow-x: auto; border-radius: 10px; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 850px; }
         th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); }
         td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
 
@@ -204,27 +204,30 @@
             </div>
 
             <div class="card">
-                <div class="card-header">2. 區域跳轉</div>
+                <div class="card-header">2. 區域定位</div>
                 <div class="form-group">
-                    <label>快速定位行政區</label>
-                    <select id="districtJump" onchange="jumpToDistrict()">
-                        <option value="">-- 請選擇 --</option>
-                        <option value="23.2995,120.3159">新營區</option>
-                        <option value="23.3512,120.4158">白河區</option>
-                        <option value="23.1612,120.1765">佳里區</option>
-                        <option value="23.0485,120.2455">永康區</option>
-                        <option value="22.9915,120.2025">中西區</option>
-                        <option value="23.0015,120.1615">安平區</option>
-                    </select>
+                    <label>輸入行政區搜尋 (填空式)</label>
+                    <input list="districts" id="districtSearch" placeholder="例如：佳里區" oninput="handleDistrictSearch()">
+                    <datalist id="districts">
+                        <option value="新營區"> <option value="鹽水區"> <option value="白河區"> <option value="柳營區">
+                        <option value="後壁區"> <option value="東山區"> <option value="麻豆區"> <option value="下營區">
+                        <option value="六甲區"> <option value="官田區"> <option value="大內區"> <option value="佳里區">
+                        <option value="學甲區"> <option value="西港區"> <option value="七股區"> <option value="將軍區">
+                        <option value="北門區"> <option value="新化區"> <option value="善化區"> <option value="新市區">
+                        <option value="安定區"> <option value="山上區"> <option value="玉井區"> <option value="楠西區">
+                        <option value="南化區"> <option value="左鎮區"> <option value="仁德區"> <option value="歸仁區">
+                        <option value="關廟區"> <option value="龍崎區"> <option value="永康區"> <option value="東區">
+                        <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
+                    </datalist>
                 </div>
-                <div class="tip-box">💡 選擇後點擊地圖定點。</div>
+                <div class="tip-box">💡 輸入後選擇區域，地圖將自動跳轉。</div>
             </div>
 
             <div class="card">
                 <div class="card-header">3. 命名與儲存</div>
                 <div class="form-group">
                     <label>位置描述</label>
-                    <input type="text" id="locName" placeholder="如：路口名稱..." onkeydown="if(event.key==='Enter') addData()">
+                    <input type="text" id="locName" placeholder="如：文化路與安北路口..." onkeydown="if(event.key==='Enter') addData()">
                 </div>
                 <div class="form-group">
                     <label>📍 座標數值</label>
@@ -240,7 +243,7 @@
     </div>
 
     <div class="status-bar">
-        <div>累積數量：<b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> 筆</div>
+        <div>累積數量：<b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> / 100 筆</div>
         <div id="backup-status"></div>
         <div class="btn-group" style="display: flex; gap: 10px;">
             <button class="btn btn-clear" onclick="clearData()">🗑 清空</button>
@@ -265,7 +268,7 @@
         </table>
     </div>
 
-    <div class="author">開發作者：NIENCHEN TSAI | 臺南市政府警察局交通大數據分析</div>
+    <div class="author">開發作者：NIENCHEN TSAI | 專供臺南市政府警察局交通大數據分析</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -275,107 +278,8 @@
     let hasClicked = false;
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
 
-    window.onload = function() {
-        initMap();
-        loadBackup();
-    };
-
-    function initMap() {
-        map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([22.997, 120.211], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        currentMarker = L.marker([0,0]);
-        map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
-        setTimeout(() => { map.invalidateSize(); }, 500);
-    }
-
-    function updateMarker(lat, lng) {
-        if (!hasClicked) { currentMarker.addTo(map); hasClicked = true; }
-        currentMarker.setLatLng([lat, lng]);
-        document.getElementById('coords').value = lat + ", " + lng;
-    }
-
-    function jumpToDistrict() {
-        const val = document.getElementById('districtJump').value;
-        if (val) {
-            const coords = val.split(',');
-            map.setView([parseFloat(coords[0]), parseFloat(coords[1])], 15);
-        }
-    }
-
-    function saveBackup() {
-        localStorage.setItem('tainan_police_v61', JSON.stringify(dataList));
-        document.getElementById('backup-status').innerText = '已保存 ✓';
-    }
-
-    function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v61');
-        if (saved) {
-            dataList = JSON.parse(saved);
-            renderTable();
-        }
-    }
-
-    function clearData() {
-        if (confirm('確定清除清單？')) {
-            dataList = [];
-            localStorage.removeItem('tainan_police_v61');
-            renderTable();
-        }
-    }
-
-    function addData() {
-        const unitSelect = document.getElementById('unit');
-        const unit = unitSelect.options[unitSelect.selectedIndex].text.split('.')[1]; // 取得分局名稱
-        const category = document.getElementById('category').value;
-        const loc = document.getElementById('locName').value.trim();
-        const coords = document.getElementById('coords').value;
-
-        if (!category || !loc || !coords) { alert("資訊不完整！"); return; }
-
-        const parts = coords.split(', ');
-        dataList.push({ unit, category, loc, lat: parts[0], lng: parts[1] });
-        renderTable();
-        saveBackup();
-        document.getElementById('locName').value = '';
-        document.getElementById('coords').value = '';
-        if(hasClicked) { map.removeLayer(currentMarker); hasClicked = false; }
-        document.getElementById('locName').focus();
-    }
-
-    function renderTable() {
-        const tbody = document.getElementById('dataBody');
-        tbody.innerHTML = '';
-        dataList.forEach((item, i) => {
-            tbody.innerHTML += `<tr>
-                <td>${i+1}</td>
-                <td><b>${item.unit}</b></td>
-                <td><span class="cat-tag">${item.category}</span></td>
-                <td>${item.loc}</td>
-                <td style="font-family: monospace;">${item.lat}</td>
-                <td style="font-family: monospace;">${item.lng}</td>
-                <td style="text-align:center"><button onclick="deleteData(${i})" style="color:var(--main-rose); border:none; background:none; font-weight:bold; cursor:pointer;">刪除</button></td>
-            </tr>`;
-        });
-        document.getElementById('dataCount').innerText = dataList.length;
-    }
-
-    function deleteData(index) {
-        dataList.splice(index, 1);
-        renderTable();
-        saveBackup();
-    }
-
-    function exportToExcel() {
-        if (dataList.length === 0) return;
-        const exportData = dataList.map((item, index) => ({
-            "編號": index + 1, "單位": item.unit, "勤務項目": item.category, "位置": item.loc, "緯度": item.lat, "經度": item.lng
-        }));
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "座標採集結果");
-        XLSX.writeFile(workbook, `臺南座標採集_${new Date().getTime()}.xlsx`);
-    }
-</script>
-
-</body>
-</html>
+    // 臺南 37 區座標資料庫
+    const districtCoords = {
+        "新營區": [23.2995, 120.3159], "鹽水區": [23.3101, 120.2662], "白河區": [23.3512, 120.4158], "柳營區": [23.2105, 120.3168],
+        "後壁區": [23.3283, 120.3732], "東山區": [23.2711, 120.4042], "麻豆區": [23.1819, 120.2523], "下營區": [23.2185, 120.2483],
+        "六甲區": [23.2255, 120.3875], "官田區": [23.1539, 120
