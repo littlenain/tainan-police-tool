@@ -17,7 +17,7 @@
         }
 
         body { 
-            font-family: "Microsoft JhengHei", sans-serif; 
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-color); 
             margin: 0; padding: 20px; font-size: 18px; 
@@ -89,14 +89,14 @@
         td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
 
         @media (max-width: 992px) {
-            .content-layout { grid-template-columns: 1fr; }
+            .content-layout { grid-template-columns: 1fr; } 
             #map-container { height: 450px; order: -1; }
             .form-panel { width: 100%; }
             .main-title { font-size: 1.8rem; flex-direction: column; text-align: center; }
             th:nth-child(5), td:nth-child(5), th:nth-child(6), td:nth-child(6) { display: none; }
         }
 
-        .tip-box { background: #FFF9F9; color: #A54354; padding: 12px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; }
+        .tip-box { background: #FFF9F9; color: #A54354; padding: 10px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; }
         .cat-tag { padding: 4px 8px; border-radius: 4px; background: var(--main-rose-light); color: var(--main-rose-dark); font-weight: bold; }
         .author { font-size: 12px; color: #999; text-align: right; margin-top: 50px; }
     </style>
@@ -159,16 +159,17 @@
                         <option value="永康區"> <option value="東區"> <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
                     </datalist>
                 </div>
+                <div class="tip-box">💡 選好行政區，直接點擊右側地圖路口。</div>
             </div>
 
             <div class="card">
                 <div class="card-header">3. 命名與儲存</div>
                 <div class="form-group">
-                    <label>名稱 (位置描述)</label>
+                    <label>位置描述</label>
                     <input type="text" id="locName" placeholder="如：路口名稱..." onkeydown="if(event.key==='Enter') addData()">
                 </div>
                 <div class="form-group">
-                    <label>📍 座標值</label>
+                    <label>📍 座標數值</label>
                     <input type="text" id="coords" readonly placeholder="點擊地圖定點">
                 </div>
                 <button class="btn btn-add" onclick="addData()">✚ 加入清單</button>
@@ -181,7 +182,7 @@
     </div>
 
     <div class="status-bar">
-        <div>累積數量：<b id="dataCount" style="color:var(--main-rose); font-size: 1.5rem;">0</b> 筆</div>
+        <div><b>📊 已採集：</b> <b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> / 100 筆</div>
         <div id="backup-status" style="color:var(--main-rose); font-weight:bold;"></div>
         <div class="btn-group" style="display: flex; gap: 10px;">
             <button class="btn btn-clear" onclick="clearData()">🗑 清空</button>
@@ -195,8 +196,8 @@
                 <tr>
                     <th style="width:50px">#</th>
                     <th>單位</th>
-                    <th>項目</th>
-                    <th>描述</th>
+                    <th>勤務項目</th>
+                    <th>位置描述</th>
                     <th>緯度</th>
                     <th>經度</th>
                     <th style="width:80px; text-align:center">操作</th>
@@ -206,7 +207,7 @@
         </table>
     </div>
 
-    <div class="author">作者 NIENCHEN TSAI | 臺南市政府警察局交通大數據分析</div>
+    <div class="author">開發作者：NIENCHEN TSAI | 臺南市政府警察局交通大數據分析</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -235,10 +236,7 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         currentMarker = L.marker([0,0]);
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
-        let checkSize = setInterval(() => {
-            map.invalidateSize();
-            if (document.getElementById('map').offsetWidth > 0) clearInterval(checkSize);
-        }, 200);
+        let checkSize = setInterval(() => { map.invalidateSize(); if (document.getElementById('map').offsetWidth > 0) clearInterval(checkSize); }, 200);
     }
 
     function updateMarker(lat, lng) {
@@ -253,18 +251,18 @@
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v64', JSON.stringify(dataList));
-        document.getElementById('backup-status').innerText = '已保存 ✓';
+        localStorage.setItem('tainan_police_v65', JSON.stringify(dataList));
+        document.getElementById('backup-status').innerText = '已自動保存 ✓';
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v64');
+        const saved = localStorage.getItem('tainan_police_v65');
         if (saved) { dataList = JSON.parse(saved); renderTable(); }
     }
 
     function clearData() {
-        if (confirm('確定清空？')) { dataList = []; localStorage.removeItem('tainan_police_v64'); renderTable(); }
+        if (confirm('確定清空所有採集資料？')) { dataList = []; localStorage.removeItem('tainan_police_v65'); renderTable(); }
     }
 
     function addData() {
@@ -275,7 +273,7 @@
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
 
-        if (!category || !loc || !coords) { alert("資訊不完整！"); return; }
+        if (!category || !loc || !coords) { alert("資訊不完整，請填寫名稱並點選地圖座標！"); return; }
         const parts = coords.split(', ');
         dataList.push({ unit, category, loc, lat: parts[0], lng: parts[1] });
         renderTable(); saveBackup();
@@ -290,7 +288,7 @@
         tbody.innerHTML = '';
         dataList.forEach((item, i) => {
             tbody.innerHTML += `<tr>
-                <td>${i+1}</td>
+                <td style="color:#999">${i+1}</td>
                 <td><b>${item.unit}</b></td>
                 <td><span class="cat-tag">${item.category}</span></td>
                 <td>${item.loc}</td>
@@ -306,27 +304,33 @@
         dataList.splice(index, 1); renderTable(); saveBackup();
     }
 
-    // --- 關鍵修正：將 Excel 欄位對應為中文 ---
     function exportToExcel() {
-        if (dataList.length === 0) return;
+        if (dataList.length === 0) { alert("清單為空，無法匯出。"); return; }
         
-        // 將英文 Key 對應為中文標題
+        // 修正 1: 標題改為中文
         const exportData = dataList.map((item, index) => ({
             "編號": index + 1,
             "單位": item.unit,
             "勤務項目": item.category,
-            "位置描述": item.loc,
+            "位置名稱": item.loc,
             "緯度": item.lat,
             "經度": item.lng
         }));
 
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "採集結果");
+        XLSX.utils.book_append_sheet(wb, ws, "座標採集結果");
+
+        // 修正 2: 檔名加入分局名稱與日期
+        const unitSelect = document.getElementById('unit');
+        const unitRaw = unitSelect.options[unitSelect.selectedIndex].text;
+        const unitName = unitRaw.split('.')[1] || unitRaw;
         
         const now = new Date();
-        const dateStr = now.getFullYear() + (now.getMonth()+1).toString().padStart(2, '0') + now.getDate().toString().padStart(2, '0');
-        XLSX.writeFile(wb, `臺南座標採集_${dateStr}.xlsx`);
+        const dateStr = now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
+        
+        const fileName = `${unitName}_臺南座標採集_${dateStr}.xlsx`;
+        XLSX.writeFile(wb, fileName);
     }
 </script>
 
