@@ -98,12 +98,12 @@
 
             <div class="form-group">
                 <label>位置描述 (Enter 新增)</label>
-                <input type="text" id="locName" placeholder="如：北區西門路口" onkeydown="handleKeyPress(event)">
+                <input type="text" id="locName" placeholder="如：北區西門路口" onkeydown="if(event.key==='Enter') addData()">
             </div>
             
             <div class="form-group">
                 <label>🔍 地圖模糊搜尋 (Enter 搜尋)</label>
-                <input type="text" id="searchBox" placeholder="輸入地點或路名後按 Enter..." onkeydown="handleSearchEnter(event)">
+                <input type="text" id="searchBox" placeholder="輸入行政區或路名..." onkeydown="if(event.key==='Enter') searchMap()">
                 <b class="tip-important">※ 提示：若搜不到，請改搜「單一路名」後點擊地圖。</b>
             </div>
 
@@ -153,7 +153,6 @@
     let dataList = [];
     let map, currentMarker;
     let hasClicked = false;
-    // 台南大約範圍 (Nominatim 使用)
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
 
     window.onload = function() {
@@ -182,65 +181,66 @@
         document.getElementById('coords').value = lat + ", " + lng;
     }
 
-    // --- 強化版搜尋功能 ---
-    function handleSearchEnter(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            searchMap();
-        }
-    }
-
+    // --- 完全重新開發的搜尋功能 ---
     async function searchMap() {
-        const searchInput = document.getElementById('searchBox');
-        const query = searchInput.value.trim();
+        const input = document.getElementById('searchBox');
+        const query = input.value.trim();
         if (!query) return;
 
-        // UI 反饋：變色代表正在搜尋
-        searchInput.style.backgroundColor = "#fff9db";
+        input.placeholder = "搜尋中...";
+        input.disabled = true;
 
         try {
-            // 使用 encodeURIComponent 確保中文編碼正確
-            // 加上台南市關鍵字，並限定 viewbox 範圍
-            const encodedQuery = encodeURIComponent("台南市 " + query);
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&bounded=1&viewbox=120.03,23.41,120.65,22.88&limit=1`;
+            // 關鍵點：必須手動加入台南市，並移除可能干擾的 viewbox 限制
+            // 改用更寬鬆的搜尋方式
+            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent("台南市 " + query)}&format=json&limit=1`;
             
             const response = await fetch(url, {
+                method: 'GET',
                 headers: {
-                    'Accept-Language': 'zh-TW,zh;q=0.9'
+                    'Accept-Language': 'zh-TW,zh;q=0.9',
+                    // 有些情況瀏覽器會擋掉沒有 User-Agent 的 fetch，雖然 JS 不能直接改 User-Agent，
+                    // 但我們確保連線是單純的 GET
                 }
             });
-            
-            if (!response.ok) throw new Error("網路請求失敗");
-            
+
+            if (!response.ok) {
+                throw new Error("連線失敗，可能是圖資伺服器繁忙");
+            }
+
             const results = await response.json();
             
             if (results && results.length > 0) {
-                const best = results[0];
-                const lat = parseFloat(best.lat).toFixed(6);
-                const lon = parseFloat(best.lon).toFixed(6);
-                map.setView([lat, lon], 17);
-                updateMarker(lat, lon);
+                const res = results[0];
+                const lat = parseFloat(res.lat);
+                const lon = parseFloat(res.lon);
+                
+                // 跳轉並標註
+                map.setView([lat, lon], 16);
+                updateMarker(lat.toFixed(6), lon.toFixed(6));
             } else {
-                alert("找不到地點：『" + query + "』\n\n小撇步：\n1. 只輸入路名 (如: 西門路)\n2. 檢查字是否有誤");
+                alert("找不到地點：『" + query + "』\n請嘗試：\n1. 只輸入行政區名稱 (如: 佳里區)\n2. 只輸入路名 (如: 中正路)");
             }
         } catch (error) {
-            console.error("搜尋發生錯誤:", error);
-            alert("目前無法連線至搜尋服務，請手動在地圖上選取位置。");
+            console.error(error);
+            alert("搜尋服務暫時無法回應，請檢查網路，或直接在地圖上點選位置。");
         } finally {
-            searchInput.style.backgroundColor = ""; // 恢復顏色
+            input.placeholder = "輸入地點或路名後按 Enter...";
+            input.disabled = false;
+            input.focus();
         }
     }
 
     // --- 備份功能 ---
     function saveBackup() {
-        localStorage.setItem('tainan_police_v37', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v38', JSON.stringify(dataList));
         const status = document.getElementById('backup-status');
         status.style.display = 'block';
         status.innerText = `已自動備份 (${new Date().toLocaleTimeString()}) ✓`;
     }
 
     function loadBackup() {
-        const savedData = localStorage.getItem('tainan_police_v37');
+        const savedData = localStorage.getItem('tainan_police_v38');
         if (savedData) {
             const parsed = JSON.parse(savedData);
             if (parsed.length > 0) {
@@ -255,13 +255,11 @@
     function clearData() {
         if (confirm('確定清空所有資料？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v37');
+            localStorage.removeItem('tainan_police_v38');
             renderTable();
             document.getElementById('backup-status').style.display = 'none';
         }
     }
-
-    function handleKeyPress(event) { if (event.key === 'Enter') addData(); }
 
     function addData() {
         if (dataList.length >= 100) { alert("已達上限 100 筆"); return; }
