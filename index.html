@@ -26,7 +26,7 @@
 
         .input-section { display: flex; gap: 20px; margin-bottom: 25px; align-items: stretch; }
         .form-panel { width: 260px; flex-shrink: 0; background: #fafafa; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); }
-        #map-container { flex-grow: 1; height: 600px; position: relative; }
+        #map-container { flex-grow: 1; height: 620px; position: relative; }
         #map { height: 100%; width: 100%; border-radius: 10px; border: 1px solid #ccc; z-index: 1; }
         
         .form-group { margin-bottom: 15px; }
@@ -85,6 +85,50 @@
             </div>
 
             <div class="form-group">
+                <label>行政區快速跳轉</label>
+                <select id="districtJump" onchange="jumpToDistrict()">
+                    <option value="">請選擇行政區...</option>
+                    <option value="23.2995,120.3159">新營區</option>
+                    <option value="23.3512,120.4158">白河區</option>
+                    <option value="23.3283,120.3732">後壁區</option>
+                    <option value="23.2711,120.4042">東山區</option>
+                    <option value="23.2105,120.3168">柳營區</option>
+                    <option value="23.3101,120.2662">鹽水區</option>
+                    <option value="23.2185,120.2483">下營區</option>
+                    <option value="23.2255,120.3875">六甲區</option>
+                    <option value="23.1819,120.2523">麻豆區</option>
+                    <option value="23.1539,120.3345">官田區</option>
+                    <option value="23.1311,120.4145">大內區</option>
+                    <option value="23.1612,120.1765">佳里區</option>
+                    <option value="23.1415,120.1035">七股區</option>
+                    <option value="23.2215,120.1265">學甲區</option>
+                    <option value="23.2685,120.1245">北門區</option>
+                    <option value="23.1955,120.0835">將軍區</option>
+                    <option value="23.0985,120.1325">西港區</option>
+                    <option value="23.1315,120.2955">善化區</option>
+                    <option value="23.0785,120.3015">新市區</option>
+                    <option value="23.0485,120.2455">永康區</option>
+                    <option value="23.1215,120.2365">安定區</option>
+                    <option value="23.1025,120.3545">山上區</option>
+                    <option value="23.0335,120.3345">新化區</option>
+                    <option value="23.0125,120.4155">左鎮區</option>
+                    <option value="23.1255,120.4635">玉井區</option>
+                    <option value="23.1745,120.5125">楠西區</option>
+                    <option value="23.0455,120.5435">南化區</option>
+                    <option value="22.9685,120.2855">仁德區</option>
+                    <option value="22.9635,120.2525">東區</option>
+                    <option value="22.9915,120.2025">中西區</option>
+                    <option value="22.9555,120.1915">南區</option>
+                    <option value="23.0065,120.2115">北區</option>
+                    <option value="23.0015,120.1615">安平區</option>
+                    <option value="23.0485,120.1855">安南區</option>
+                    <option value="22.9685,120.3285">歸仁區</option>
+                    <option value="22.9615,120.3785">關廟區</option>
+                    <option value="22.9365,120.4085">龍崎區</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>勤務項目(必填)</label>
                 <select id="category" required>
                     <option value="" disabled selected>請選擇項目...</option>
@@ -97,19 +141,14 @@
             </div>
 
             <div class="form-group">
-                <label>位置描述 (Enter 新增)</label>
-                <input type="text" id="locName" placeholder="如：北區西門路口" onkeydown="if(event.key==='Enter') addData()">
-            </div>
-            
-            <div class="form-group">
-                <label>🔍 地圖模糊搜尋 (Enter 搜尋)</label>
-                <input type="text" id="searchBox" placeholder="輸入行政區或路名..." onkeydown="if(event.key==='Enter') searchMap()">
-                <b class="tip-important">※ 提示：若搜不到，請改搜「單一路名」後點擊地圖。</b>
+                <label>名稱 (位置或勤務處所)</label>
+                <input type="text" id="locName" placeholder="如：西門路一段與府前路口" onkeydown="if(event.key==='Enter') addData()">
             </div>
 
             <div class="form-group">
                 <label>📍 經緯度 (點擊地圖取得)</label>
-                <input type="text" id="coords" readonly placeholder="請在地圖點選位置..." style="background-color: #f8f9fa; font-family: monospace;">
+                <input type="text" id="coords" readonly placeholder="請點擊地圖定點..." style="background-color: #f8f9fa; font-family: monospace;">
+                <b class="tip-important">※ 提示：選好行政區後，直接在地圖上目標位置點一下即可取得座標。</b>
             </div>
             
             <button class="btn-add" onclick="addData()">確定加入清單</button>
@@ -137,8 +176,8 @@
                 <th style="width: 110px;">單位</th>
                 <th style="width: 120px;">勤務項目</th>
                 <th>位置描述</th>
-                <th style="width: 100px;">緯度</th>
-                <th style="width: 100px;">經度</th>
+                <th style="width: 110px;">緯度</th>
+                <th style="width: 110px;">經度</th>
                 <th style="width: 60px; text-align: center;">操作</th>
             </tr>
         </thead>
@@ -161,15 +200,8 @@
     };
 
     function initMap() {
-        map = L.map('map', { 
-            maxBounds: TAINAN_BOUNDS, 
-            maxBoundsViscosity: 1.0 
-        }).setView([23.000, 120.215], 14);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-            attribution: '© OpenStreetMap' 
-        }).addTo(map);
-
+        map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([23.000, 120.215], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
         currentMarker = L.marker([0,0]);
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
     }
@@ -177,70 +209,29 @@
     function updateMarker(lat, lng) {
         if (!hasClicked) { currentMarker.addTo(map); hasClicked = true; }
         currentMarker.setLatLng([lat, lng]);
-        currentMarker.bindPopup(`已標定座標：<br>${lat}, ${lng}`).openPopup();
+        currentMarker.bindPopup(`座標已標定：<br>${lat}, ${lng}`).openPopup();
         document.getElementById('coords').value = lat + ", " + lng;
     }
 
-    // --- 完全重新開發的搜尋功能 ---
-    async function searchMap() {
-        const input = document.getElementById('searchBox');
-        const query = input.value.trim();
-        if (!query) return;
-
-        input.placeholder = "搜尋中...";
-        input.disabled = true;
-
-        try {
-            // 關鍵點：必須手動加入台南市，並移除可能干擾的 viewbox 限制
-            // 改用更寬鬆的搜尋方式
-            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent("台南市 " + query)}&format=json&limit=1`;
-            
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept-Language': 'zh-TW,zh;q=0.9',
-                    // 有些情況瀏覽器會擋掉沒有 User-Agent 的 fetch，雖然 JS 不能直接改 User-Agent，
-                    // 但我們確保連線是單純的 GET
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error("連線失敗，可能是圖資伺服器繁忙");
-            }
-
-            const results = await response.json();
-            
-            if (results && results.length > 0) {
-                const res = results[0];
-                const lat = parseFloat(res.lat);
-                const lon = parseFloat(res.lon);
-                
-                // 跳轉並標註
-                map.setView([lat, lon], 16);
-                updateMarker(lat.toFixed(6), lon.toFixed(6));
-            } else {
-                alert("找不到地點：『" + query + "』\n請嘗試：\n1. 只輸入行政區名稱 (如: 佳里區)\n2. 只輸入路名 (如: 中正路)");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("搜尋服務暫時無法回應，請檢查網路，或直接在地圖上點選位置。");
-        } finally {
-            input.placeholder = "輸入地點或路名後按 Enter...";
-            input.disabled = false;
-            input.focus();
-        }
+    // 新增：行政區跳轉功能 (完全不需連網搜尋)
+    function jumpToDistrict() {
+        const val = document.getElementById('districtJump').value;
+        if (!val) return;
+        const coords = val.split(',');
+        const lat = parseFloat(coords[0]);
+        const lng = parseFloat(coords[1]);
+        map.setView([lat, lng], 15); // 跳轉到行政區中心，縮放等級設為 15 (街道層級)
     }
 
-    // --- 備份功能 ---
     function saveBackup() {
-        localStorage.setItem('tainan_police_v38', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v40', JSON.stringify(dataList));
         const status = document.getElementById('backup-status');
         status.style.display = 'block';
         status.innerText = `已自動備份 (${new Date().toLocaleTimeString()}) ✓`;
     }
 
     function loadBackup() {
-        const savedData = localStorage.getItem('tainan_police_v38');
+        const savedData = localStorage.getItem('tainan_police_v40');
         if (savedData) {
             const parsed = JSON.parse(savedData);
             if (parsed.length > 0) {
@@ -253,9 +244,9 @@
     }
 
     function clearData() {
-        if (confirm('確定清空所有資料？')) {
+        if (confirm('確定要清空所有資料嗎？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v38');
+            localStorage.removeItem('tainan_police_v40');
             renderTable();
             document.getElementById('backup-status').style.display = 'none';
         }
@@ -263,7 +254,6 @@
 
     function addData() {
         if (dataList.length >= 100) { alert("已達上限 100 筆"); return; }
-        
         const unit = document.getElementById('unit').value;
         const category = document.getElementById('category').value;
         const loc = document.getElementById('locName').value.trim();
@@ -279,7 +269,6 @@
         saveBackup();
         
         document.getElementById('locName').value = '';
-        document.getElementById('searchBox').value = '';
         document.getElementById('coords').value = '';
         if(hasClicked) { map.removeLayer(currentMarker); hasClicked = false; }
         document.getElementById('locName').focus();
@@ -319,8 +308,7 @@
         }));
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "座標採集結果");
-        
+        XLSX.utils.book_append_sheet(workbook, worksheet, "座標結果");
         const d = new Date();
         const ts = d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2) + "_" + ('0'+d.getHours()).slice(-2) + ('0'+d.getMinutes()).slice(-2);
         XLSX.writeFile(workbook, `臺南座標採集_${ts}.xlsx`);
