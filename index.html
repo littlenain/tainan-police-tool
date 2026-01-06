@@ -16,14 +16,13 @@
             --export-green: #24936E;
         }
 
-        /* 基礎字體與背景 */
         body { 
             font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-color); 
             margin: 0; 
             padding: 20px;
-            font-size: 18px; /* 電腦版基礎字體 */
+            font-size: 18px; 
         }
 
         .container { 
@@ -35,7 +34,6 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.05); 
         }
 
-        /* 標題與獨立彩色警車 */
         .main-title {
             color: var(--main-rose);
             font-weight: 900;
@@ -47,7 +45,6 @@
         }
         .police-car { font-size: 3.2rem; -webkit-text-fill-color: initial; }
 
-        /* 佈局修正 */
         .content-layout { 
             display: flex; 
             gap: 30px; 
@@ -55,7 +52,6 @@
             align-items: flex-start;
         }
 
-        /* 左側控制面板：寬度縮減約 1/6 (265px) */
         .form-panel { 
             width: 265px; 
             flex-shrink: 0; 
@@ -82,7 +78,6 @@
             padding-left: 10px;
         }
 
-        /* 地圖區域：增加 min-width 確保桌機版不會變 0 */
         #map-container { 
             flex: 1; 
             min-width: 400px; 
@@ -95,7 +90,6 @@
         }
         #map { height: 100%; width: 100%; z-index: 1; }
 
-        /* 輸入框一致性設計 */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #666; }
         
@@ -106,12 +100,11 @@
             border-radius: 8px; 
             font-size: 17px; 
             color: var(--text-color);
-            box-sizing: border-box; /* 核心對齊設定 */
+            box-sizing: border-box; 
             transition: border-color 0.3s;
         }
         input:focus, select:focus { border-color: var(--main-rose); outline: none; background: #FFFBFB; }
 
-        /* 按鈕設計 */
         .btn {
             border: none;
             border-radius: 8px;
@@ -132,7 +125,6 @@
         .btn-export:hover { filter: brightness(1.1); box-shadow: 0 4px 12px rgba(36, 147, 110, 0.3); }
         .btn-clear { background: #E0E0E0; color: #555; }
 
-        /* 狀態列與表格 */
         .status-bar {
             display: flex;
             justify-content: space-between;
@@ -149,7 +141,6 @@
         th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); }
         td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
 
-        /* RWD 手機版切換 */
         @media (max-width: 768px) {
             body { padding: 10px; font-size: 16px; }
             .container { padding: 15px; }
@@ -163,7 +154,7 @@
             th:nth-child(5), td:nth-child(5), th:nth-child(6), td:nth-child(6) { display: none; }
         }
 
-        .author { font-size: 11px; color: #999; text-align: right; margin-top: 50px; }
+        .author { font-size: 12px; color: #999; text-align: right; margin-top: 50px; }
         .tip-box { background: #FFF9F9; color: #A54354; padding: 12px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; }
         .cat-tag { padding: 4px 8px; border-radius: 4px; background: var(--main-rose-light); color: var(--main-rose-dark); font-weight: bold; font-size: 0.9rem; }
     </style>
@@ -180,16 +171,23 @@
                 <div class="form-group">
                     <label>單位名稱</label>
                     <select id="unit">
-                        <option value="交通警察大隊">交通警察大隊</option>
-                        <option value="新營分局">新營分局</option>
-                        <option value="佳里分局">佳里分局</option>
-                        <option value="第一分局">第一分局</option>
-                        <option value="第二分局">第二分局</option>
-                        <option value="第三分局">第三分局</option>
-                        <option value="第四分局">第四分局</option>
-                        <option value="第五分局">第五分局</option>
-                        <option value="第六分局">第六分局</option>
-                        <option value="永康分局">永康分局</option>
+                        <option value="新營分局">1.新營分局</option>
+                        <option value="白河分局">2.白河分局</option>
+                        <option value="麻豆分局">3.麻豆分局</option>
+                        <option value="佳里分局">4.佳里分局</option>
+                        <option value="學甲分局">5.學甲分局</option>
+                        <option value="善化分局">6.善化分局</option>
+                        <option value="新化分局">7.新化分局</option>
+                        <option value="歸仁分局">8.歸仁分局</option>
+                        <option value="玉井分局">9.玉井分局</option>
+                        <option value="永康分局">10.永康分局</option>
+                        <option value="第一分局">11.第一分局</option>
+                        <option value="第二分局">12.第二分局</option>
+                        <option value="第三分局">13.第三分局</option>
+                        <option value="第四分局">14.第四分局</option>
+                        <option value="第五分局">15.第五分局</option>
+                        <option value="第六分局">16.第六分局</option>
+                        <option value="交通警察大隊">17.交通警察大隊</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -212,10 +210,11 @@
                     <select id="districtJump" onchange="jumpToDistrict()">
                         <option value="">-- 請選擇 --</option>
                         <option value="23.2995,120.3159">新營區</option>
+                        <option value="23.3512,120.4158">白河區</option>
                         <option value="23.1612,120.1765">佳里區</option>
-                        <option value="23.0015,120.1615">安平區</option>
+                        <option value="23.0485,120.2455">永康區</option>
                         <option value="22.9915,120.2025">中西區</option>
-                        <option value="23.0065,120.2115">北區</option>
+                        <option value="23.0015,120.1615">安平區</option>
                     </select>
                 </div>
                 <div class="tip-box">💡 選擇後點擊地圖定點。</div>
@@ -286,7 +285,6 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         currentMarker = L.marker([0,0]);
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
-        // 修正地圖在 Flex 容器中的大小計算
         setTimeout(() => { map.invalidateSize(); }, 500);
     }
 
@@ -305,12 +303,12 @@
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v60', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v61', JSON.stringify(dataList));
         document.getElementById('backup-status').innerText = '已保存 ✓';
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v60');
+        const saved = localStorage.getItem('tainan_police_v61');
         if (saved) {
             dataList = JSON.parse(saved);
             renderTable();
@@ -320,13 +318,14 @@
     function clearData() {
         if (confirm('確定清除清單？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v60');
+            localStorage.removeItem('tainan_police_v61');
             renderTable();
         }
     }
 
     function addData() {
-        const unit = document.getElementById('unit').value;
+        const unitSelect = document.getElementById('unit');
+        const unit = unitSelect.options[unitSelect.selectedIndex].text.split('.')[1]; // 取得分局名稱
         const category = document.getElementById('category').value;
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
@@ -340,6 +339,7 @@
         document.getElementById('locName').value = '';
         document.getElementById('coords').value = '';
         if(hasClicked) { map.removeLayer(currentMarker); hasClicked = false; }
+        document.getElementById('locName').focus();
     }
 
     function renderTable() {
@@ -367,10 +367,13 @@
 
     function exportToExcel() {
         if (dataList.length === 0) return;
-        const ws = XLSX.utils.json_to_sheet(dataList);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "座標採集結果");
-        XLSX.writeFile(wb, `臺南座標採集_${new Date().getTime()}.xlsx`);
+        const exportData = dataList.map((item, index) => ({
+            "編號": index + 1, "單位": item.unit, "勤務項目": item.category, "位置": item.loc, "緯度": item.lat, "經度": item.lng
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "座標採集結果");
+        XLSX.writeFile(workbook, `臺南座標採集_${new Date().getTime()}.xlsx`);
     }
 </script>
 
