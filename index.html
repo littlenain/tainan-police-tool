@@ -8,163 +8,167 @@
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            /* 莫蘭迪色系定義 */
-            --mo-blue: #8fa6b2;      /* 灰藍 */
-            --mo-blue-dark: #6b8ca2; /* 深灰藍 */
-            --mo-green: #a3b18a;     /* 苔蘚綠 (用於匯出) */
-            --mo-sand: #e5e0d8;      /* 沙杏色 */
-            --mo-rose: #b87d7d;      /* 灰粉色 (用於刪除/警告) */
-            --mo-grey: #aeb6bf;      /* 冷灰色 */
-            --bg-color: #f4f5f7;
-            --text-color: #565d64;
+            /* 胭脂紅主色調 */
+            --main-rose: #D05A6E;
+            --main-rose-dark: #A54354;
+            --main-rose-light: #F2D5D7;
+            --bg-color: #F9F3F4;
+            --text-color: #4A4A4A;
+            --export-green: #526E62; /* 莫蘭迪深綠 */
         }
 
         body { 
-            font-family: "Microsoft JhengHei", sans-serif; 
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-color); 
             margin: 0; 
-            padding: 20px; 
+            padding: 20px;
+            font-size: 17px; /* 整體基底字體加大 */
         }
 
         .container { 
-            max-width: 1500px; 
+            max-width: 1550px; 
             margin: 0 auto; 
             background: white; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05); 
+            padding: 35px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06); 
         }
 
-        /* 恢復活潑彩虹小汽車標題 */
+        /* 標題區塊：移除漸層，警車獨立 */
         .main-title {
-            background: linear-gradient(135deg, #ff4757, #1e90ff, #2ed573);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--main-rose);
             font-weight: 900;
-            font-size: 2.3rem;
-            margin: 0 0 25px 0;
+            font-size: 2.6rem;
+            margin: 0 0 30px 0;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
+        }
+        .police-car {
+            -webkit-text-fill-color: initial; /* 確保 emoji 顏色不被覆蓋 */
+            font-size: 3rem;
         }
 
-        .input-section { display: flex; gap: 25px; margin-bottom: 30px; }
+        .input-section { display: flex; gap: 30px; margin-bottom: 30px; }
 
-        /* 左側控制面板：寬度縮減約 1/6 (原 320px -> 265px) */
+        /* 左側控制面板：縮減寬度 (265px) */
         .form-panel { 
             width: 265px; 
             flex-shrink: 0; 
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
         }
 
         .card {
             background: #ffffff;
-            border: 1px solid #eef0f2;
+            border: 1px solid #E8E8E8;
             border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
         .card-header {
             font-weight: 800;
-            font-size: 0.95rem;
-            color: var(--mo-blue-dark);
-            margin-bottom: 12px;
+            font-size: 1.1rem;
+            color: var(--main-rose-dark);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            border-left: 4px solid var(--mo-blue);
-            padding-left: 10px;
+            gap: 10px;
+            border-left: 5px solid var(--main-rose);
+            padding-left: 12px;
         }
 
         /* 地圖區域 */
         #map-container { 
             flex-grow: 1; 
-            height: 650px; 
+            height: 680px; 
             border-radius: 15px; 
             overflow: hidden; 
-            border: 4px solid #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            border: 5px solid #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
         #map { height: 100%; width: 100%; z-index: 1; }
 
-        /* 表單元素：統一長度與樣式 */
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: #7f8c8d; }
+        /* 表單元素樣式加大 */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 1rem; color: #666; }
         
         input, select { 
             width: 100%; 
-            padding: 10px; 
-            border: 1.5px solid #dcdde1; 
+            padding: 12px; 
+            border: 2px solid #EAEAEA; 
             border-radius: 8px; 
-            font-size: 14px; 
+            font-size: 16px; /* 增加輸入框字體 */
             color: var(--text-color);
-            box-sizing: border-box; /* 確保寬度一致包含 padding */
+            box-sizing: border-box; /* 嚴格限制寬度一致 */
             transition: all 0.3s ease;
         }
-        input:focus, select:focus { border-color: var(--mo-blue); outline: none; background: #fafbfc; }
+        input:focus, select:focus { border-color: var(--main-rose); outline: none; background: #FFFBFB; }
 
-        /* 按鈕設計：莫蘭迪配色 */
+        /* 按鈕設計 */
         .btn {
             border: none;
             border-radius: 8px;
-            padding: 12px;
-            font-weight: 700;
+            padding: 14px;
+            font-weight: 800;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            font-size: 1.05rem;
         }
 
-        .btn-add { background: var(--mo-blue); color: white; width: 100%; font-size: 1rem; }
-        .btn-add:hover { background: var(--mo-blue-dark); }
+        .btn-add { background: var(--main-rose); color: white; width: 100%; }
+        .btn-add:hover { background: var(--main-rose-dark); box-shadow: 0 4px 12px rgba(208, 90, 110, 0.3); }
 
-        /* 修正：匯出按鈕使用莫蘭迪綠，文字深灰色提高質感 */
-        .btn-export { background: var(--mo-green); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .btn-export:hover { filter: brightness(0.9); }
+        /* 修正匯出按鈕配色 */
+        .btn-export { background: var(--export-green); color: white; border: 1px solid rgba(0,0,0,0.1); }
+        .btn-export:hover { filter: brightness(1.1); }
         
-        .btn-clear { background: var(--mo-sand); color: #7f8c8d; }
+        .btn-clear { background: #E0E0E0; color: #555; }
 
-        /* 狀態列 */
         .status-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding: 12px 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            margin-bottom: 20px;
+            padding: 15px 25px;
+            background: #FDF8F8;
+            border-radius: 15px;
+            font-size: 1.05rem;
         }
 
-        /* 表格樣式 */
+        /* 表格優化 */
         table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        th { background: #fafbfc; color: var(--mo-blue-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid #edeff2; }
-        td { padding: 15px; border-bottom: 1px solid #f1f2f6; font-size: 14px; }
-        tr:hover { background: #fcfdfe; }
+        th { background: #F9F9F9; color: var(--main-rose-dark); padding: 18px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); font-size: 1.05rem; }
+        td { padding: 18px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; line-height: 1.5; }
+        tr:hover { background: #FFFCFC; }
 
         .cat-tag { 
-            padding: 3px 10px; 
+            padding: 5px 12px; 
             border-radius: 6px; 
-            font-size: 0.75rem; 
+            font-size: 0.9rem; 
             font-weight: bold;
-            background: var(--mo-sand);
-            color: #8e8e8e;
+            background: var(--main-rose-light);
+            color: var(--main-rose-dark);
         }
 
-        .tip-box { background: #fdfaf5; color: #a38d6d; padding: 10px; border-radius: 8px; font-size: 0.75rem; border-left: 4px solid #eadbc8; }
-        .author { font-size: 11px; color: #bdc3c7; text-align: right; margin-top: 50px; }
+        .tip-box { background: #FFF9F9; color: #A54354; padding: 12px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); }
+        .author { font-size: 12px; color: #999; text-align: right; margin-top: 50px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 class="main-title">🚓 臺南市警察多功能座標採集工具</h1>
+    <h1 class="main-title">
+        <span class="police-car">🚓</span> 
+        臺南市警察多功能座標採集工具
+    </h1>
     
     <div class="input-section">
         <div class="form-panel">
@@ -195,7 +199,7 @@
                 </div>
                 <div class="form-group">
                     <label>勤務項目</label>
-                    <select id="category" required>
+                    <select id="category">
                         <option value="" disabled selected>請選擇項目...</option>
                         <option value="專責守望">專責守望</option>
                         <option value="交通稽查">交通稽查</option>
@@ -209,9 +213,9 @@
             <div class="card">
                 <div class="card-header">Step 2. 地圖定位</div>
                 <div class="form-group">
-                    <label>行政區跳轉</label>
+                    <label>行政區快速跳轉</label>
                     <select id="districtJump" onchange="jumpToDistrict()">
-                        <option value="">-- 快速跳轉 --</option>
+                        <option value="">-- 請選擇區域 --</option>
                         <option value="23.2995,120.3159">新營區</option>
                         <option value="23.3512,120.4158">白河區</option>
                         <option value="23.1612,120.1765">佳里區</option>
@@ -219,24 +223,27 @@
                         <option value="23.0065,120.2115">北區</option>
                         <option value="22.9915,120.2025">中西區</option>
                         <option value="23.0015,120.1615">安平區</option>
-                        </select>
+                        <option value="23.0485,120.1855">安南區</option>
+                        <option value="22.9635,120.2525">東區</option>
+                        <option value="22.9555,120.1915">南區</option>
+                    </select>
                 </div>
                 <div class="tip-box">
-                    💡 選好區域後，點擊地圖目標路口取得座標。
+                    💡 選好行政區後，點擊地圖定點。
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">Step 3. 命名與儲存</div>
                 <div class="form-group">
-                    <label>名稱 (位置描述)</label>
-                    <input type="text" id="locName" placeholder="輸入名稱..." onkeydown="if(event.key==='Enter') addData()">
+                    <label>處所/路口名稱</label>
+                    <input type="text" id="locName" placeholder="輸入描述..." onkeydown="if(event.key==='Enter') addData()">
                 </div>
                 <div class="form-group">
                     <label>📍 座標值</label>
-                    <input type="text" id="coords" readonly placeholder="由地圖帶入..." style="background-color: #fbfbfc;">
+                    <input type="text" id="coords" readonly placeholder="點擊地圖帶入..." style="background-color: #FDFDFD;">
                 </div>
-                <button class="btn btn-add" onclick="addData()">✚ 加入採集清單</button>
+                <button class="btn btn-add" onclick="addData()">✚ 加入清單</button>
             </div>
 
         </div>
@@ -246,38 +253,38 @@
         </div>
     </div>
 
-    <hr style="margin: 25px 0; border: none; border-top: 1.5px solid #eee;">
+    <hr style="margin: 30px 0; border: none; border-top: 2px solid #EEE;">
     
     <div class="status-bar">
         <div>
-            <b style="color: var(--mo-blue-dark);">📊 資料清單</b> 
-            <span style="margin-left: 10px; color: #95a5a6;">目前數量：<b id="dataCount" style="color: var(--mo-rose);">0</b> / 100</span>
+            <b style="color: var(--main-rose-dark);">📊 資料清單概況</b> 
+            <span style="margin-left: 15px; color: #666;">總計：<b id="dataCount" style="color: var(--main-rose); font-size: 1.2rem;">0</b> 筆</span>
         </div>
-        <div id="backup-status" style="color: var(--mo-green); font-size: 0.8rem;"></div>
-        <div style="display: flex; gap: 10px;">
+        <div id="backup-status" style="color: var(--main-rose);"></div>
+        <div style="display: flex; gap: 15px;">
             <button class="btn btn-clear" onclick="clearData()">🗑 清空</button>
             <button class="btn btn-export" onclick="exportToExcel()">📥 匯出 Excel 表單</button>
         </div>
     </div>
     
-    <div class="card" style="padding: 0; overflow: hidden; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
+    <div class="card" style="padding: 0; overflow: hidden; border: none;">
         <table id="dataTable">
             <thead>
                 <tr>
-                    <th style="width: 50px;">#</th>
-                    <th style="width: 120px;">單位</th>
-                    <th style="width: 120px;">項目</th>
+                    <th style="width: 60px;">#</th>
+                    <th style="width: 130px;">單位</th>
+                    <th style="width: 140px;">項目</th>
                     <th>處所名稱</th>
-                    <th style="width: 110px;">緯度</th>
-                    <th style="width: 110px;">經度</th>
-                    <th style="width: 70px; text-align: center;">操作</th>
+                    <th style="width: 120px;">緯度</th>
+                    <th style="width: 120px;">經度</th>
+                    <th style="width: 80px; text-align: center;">操作</th>
                 </tr>
             </thead>
             <tbody id="dataBody"></tbody>
         </table>
     </div>
 
-    <div class="author">NIENCHEN TSAI | 臺南市政府警察局交通大數據分析</div>
+    <div class="author">NIENCHEN TSAI | 專供臺南市政府警察局交通分析使用</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -295,13 +302,7 @@
     function initMap() {
         map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([22.997, 120.211], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(map);
-        currentMarker = L.marker([0,0], {
-            icon: L.icon({
-                iconUrl: 'https://cdn-icons-png.flaticon.com/512/9131/9131546.png',
-                iconSize: [36, 36],
-                iconAnchor: [18, 36]
-            })
-        });
+        currentMarker = L.marker([0,0]);
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
     }
 
@@ -319,13 +320,13 @@
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v50', JSON.stringify(dataList));
-        document.getElementById('backup-status').innerText = `已自動保存 ✓`;
+        localStorage.setItem('tainan_police_v55', JSON.stringify(dataList));
+        document.getElementById('backup-status').innerText = `已自動備份 ✓`;
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v50');
+        const saved = localStorage.getItem('tainan_police_v55');
         if (saved) {
             const parsed = JSON.parse(saved);
             if (parsed.length > 0) {
@@ -338,21 +339,20 @@
     }
 
     function clearData() {
-        if (confirm('⚠️ 確定清空清單？')) {
+        if (confirm('⚠️ 確定清除清單？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v50');
+            localStorage.removeItem('tainan_police_v55');
             renderTable();
         }
     }
 
     function addData() {
-        if (dataList.length >= 100) return;
         const unit = document.getElementById('unit').value;
         const category = document.getElementById('category').value;
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
 
-        if (!category || !loc || !coords) { alert("請檢查資訊是否完整！"); return; }
+        if (!category || !loc || !coords) { alert("資訊不完整，請在地圖上點點！"); return; }
 
         const parts = coords.split(', ');
         dataList.push({ unit, category, loc, lat: parts[0], lng: parts[1] });
@@ -368,14 +368,14 @@
         tbody.innerHTML = '';
         dataList.forEach((item, i) => {
             const row = `<tr>
-                <td style="color:#bdc3c7;">${i + 1}</td>
+                <td>${i + 1}</td>
                 <td><b>${item.unit}</b></td>
                 <td><span class="cat-tag">${item.category}</span></td>
                 <td>${item.loc}</td>
                 <td style="font-family: monospace;">${item.lat}</td>
                 <td style="font-family: monospace;">${item.lng}</td>
                 <td style="text-align: center;">
-                    <button style="color:var(--mo-rose); cursor:pointer; border:none; background:none; font-weight:bold;" onclick="deleteData(${i})">刪除</button>
+                    <button style="color:var(--main-rose); cursor:pointer; border:none; background:none; font-weight:bold;" onclick="deleteData(${i})">刪除</button>
                 </td>
             </tr>`;
             tbody.innerHTML += row;
@@ -394,8 +394,8 @@
         }));
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "結果");
-        XLSX.writeFile(workbook, `臺南警座標採集_${new Date().getTime()}.xlsx`);
+        XLSX.utils.book_append_sheet(workbook, worksheet, "採集清單");
+        XLSX.writeFile(workbook, `臺南座標採集_${new Date().getTime()}.xlsx`);
     }
 </script>
 
