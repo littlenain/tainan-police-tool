@@ -88,6 +88,7 @@
         @media (max-width: 992px) {
             .content-layout { grid-template-columns: 1fr; }
             #map-container { height: 450px; order: -1; }
+            .form-panel { width: 100%; }
             .main-title { font-size: 1.6rem; flex-direction: column; text-align: center; }
             th:nth-child(7), td:nth-child(7), th:nth-child(8), td:nth-child(8) { display: none; }
         }
@@ -127,6 +128,7 @@
                         <option value="專責守望">專責守望</option>
                         <option value="交通稽查">交通稽查</option>
                         <option value="巡邏兼守望">巡邏兼守望</option>
+                        <option value="勤查守望">勤查守望</option>
                         <option value="科技執法/固定桿">科技執法/固定桿</option>
                         <option value="其他">其他</option>
                     </select>
@@ -134,7 +136,7 @@
             </div>
 
             <div class="card">
-                <div class="card-header">2. 行政區跳轉</div>
+                <div class="card-header">2. 行政區</div>
                 <div class="form-group">
                     <label>輸入區名 (自動帶入)</label>
                     <input type="text" id="districtSearch" list="districtList" placeholder="輸入後點選即跳轉" oninput="handleDistrictSearch()">
@@ -147,22 +149,22 @@
                         <option value="永康區"> <option value="東區"> <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
                     </datalist>
                 </div>
-                <div class="tip-box">💡 選擇行政區後，地圖飛過去且系統會自動記錄。</div>
+                <div class="tip-box">💡 選擇行政區後，地圖會飛過去且系統會自動記錄。</div>
             </div>
 
             <div class="card">
                 <div class="card-header">3. 命名與儲存</div>
                 <div class="form-group">
                     <label>位置名稱</label>
-                    <input type="text" id="locName" placeholder="如：西門路府前路口" onkeydown="if(event.key==='Enter') addData()">
+                    <input type="text" id="locName" placeholder="如：路口名稱..." onkeydown="if(event.key==='Enter') addData()">
                 </div>
                 <div class="form-group">
                     <label>分析範圍 (公尺)</label>
-                    <input type="number" id="rangeRadius" value="50" placeholder="預設 50 公尺">
+                    <input type="number" id="rangeRadius" value="50">
                 </div>
                 <div class="form-group">
-                    <label>📍 座標值</label>
-                    <input type="text" id="coords" readonly placeholder="由地圖自動帶入">
+                    <label>點地圖位置自動帶入</label>
+                    <input type="text" id="coords" readonly placeholder="請在地圖點選座標">
                 </div>
                 <button class="btn btn-add" onclick="addData()">✚ 加入採集清單</button>
             </div>
@@ -250,20 +252,20 @@
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v77', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v78', JSON.stringify(dataList));
         document.getElementById('backup-status').innerText = '已自動備份 ✓';
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v77');
+        const saved = localStorage.getItem('tainan_police_v78');
         if (saved) { dataList = JSON.parse(saved); renderTable(); }
     }
 
     function clearData() {
         if (confirm('⚠️ 確定清空所有採集紀錄？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v77');
+            localStorage.removeItem('tainan_police_v78');
             renderTable();
         }
     }
@@ -278,7 +280,7 @@
         const coords = document.getElementById('coords').value;
 
         if (!cat) { alert("請選取【勤務項目】！"); return; }
-        if (!loc || !coords) { alert("資訊不完整！請在地圖選點並輸入名稱。"); return; }
+        if (!loc || !coords) { alert("資訊不完整！請在點地圖位置自動帶入。"); return; }
         const parts = coords.split(', ');
         
         dataList.push({ unit, district: selectedDistrictName, category: cat, loc, range, lat: parts[0], lng: parts[1] });
@@ -293,7 +295,7 @@
         tbody.innerHTML = '';
         dataList.forEach((item, i) => {
             tbody.innerHTML += `<tr>
-                <td style="color:#999">${i+1}</td>
+                <td>${i+1}</td>
                 <td><b>${item.unit}</b></td>
                 <td><span class="cat-tag">${item.district}</span></td>
                 <td>${item.category}</td>
@@ -314,7 +316,7 @@
     function exportToExcel() {
         if (dataList.length === 0) return;
         const exportData = dataList.map((item, index) => ({
-            "編號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
+            "序號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
