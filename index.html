@@ -88,7 +88,6 @@
         @media (max-width: 992px) {
             .content-layout { grid-template-columns: 1fr; }
             #map-container { height: 450px; order: -1; }
-            .form-panel { width: 100%; }
             .main-title { font-size: 1.6rem; flex-direction: column; text-align: center; }
             th:nth-child(6), td:nth-child(6), th:nth-child(7), td:nth-child(7) { display: none; }
         }
@@ -106,7 +105,7 @@
     <div class="content-layout">
         <div class="form-panel">
             <div class="card">
-                <div class="card-header">1. 單位與範圍</div>
+                <div class="card-header">1. 基本資訊</div>
                 <div class="form-group">
                     <label>單位名稱</label>
                     <select id="unit">
@@ -121,14 +120,10 @@
                         <option value="交通警察大隊">17.交通警察大隊</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>查找範圍 (公尺)</label>
-                    <input type="number" id="rangeRadius" value="50">
                 </div>
-            </div>
 
             <div class="card">
-                <div class="card-header">2. 快速搜尋行政區</div>
+                <div class="card-header">2. 行政區跳轉</div>
                 <div class="form-group">
                     <label>輸入區名 (自動帶入)</label>
                     <input type="text" id="districtSearch" list="districtList" placeholder="輸入後點選即跳轉" oninput="handleDistrictSearch()">
@@ -148,7 +143,11 @@
                 <div class="card-header">3. 命名與儲存</div>
                 <div class="form-group">
                     <label>位置名稱</label>
-                    <input type="text" id="locName" placeholder="描述路口或地標" onkeydown="if(event.key==='Enter') addData()">
+                    <input type="text" id="locName" placeholder="如：路口名稱..." onkeydown="if(event.key==='Enter') addData()">
+                </div>
+                <div class="form-group">
+                    <label>分析範圍 (公尺)</label>
+                    <input type="number" id="rangeRadius" value="50" placeholder="預設 50 公尺">
                 </div>
                 <div class="form-group">
                     <label>📍 座標值</label>
@@ -179,7 +178,7 @@
                     <th style="width:50px">#</th>
                     <th>單位</th>
                     <th>行政區</th>
-                    <th>名稱</th>
+                    <th>位置名稱</th>
                     <th>範圍(m)</th>
                     <th>緯度</th>
                     <th>經度</th>
@@ -190,7 +189,7 @@
         </table>
     </div>
 
-    <div class="author">開發作者：NIENCHEN TSAI | 臺南市政府警察局專用工具</div>
+    <div class="author">開發作者：NIENCHEN TSAI | 專供臺南市政府警察局交通分析使用</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -201,7 +200,6 @@
     let hasClicked = false;
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
 
-    // 內建全市 37 區座標
     const allDistricts = {
         "新營區": [23.308, 120.317], "鹽水區": [23.320, 120.266], "白河區": [23.351, 120.415], "柳營區": [23.277, 120.311], "後壁區": [23.365, 120.362], "東山區": [23.323, 120.404],
         "麻豆區": [23.181, 120.252], "下營區": [23.223, 120.263], "六甲區": [23.231, 120.347], "官田區": [23.181, 120.318], "大內區": [23.119, 120.402], "佳里區": [23.161, 120.176],
@@ -235,37 +233,38 @@
         const val = input.value.trim();
         if (allDistricts[val]) {
             map.setView(allDistricts[val], 15);
-            selectedDistrictName = val; // 智慧記憶行政區
+            selectedDistrictName = val;
         }
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v75', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v76', JSON.stringify(dataList));
         document.getElementById('backup-status').innerText = '已自動備份 ✓';
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v75');
+        const saved = localStorage.getItem('tainan_police_v76');
         if (saved) { dataList = JSON.parse(saved); renderTable(); }
     }
 
     function clearData() {
-        if (confirm('⚠️ 確定清空採集紀錄？')) {
+        if (confirm('⚠️ 確定清空所有採集紀錄？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v75');
+            localStorage.removeItem('tainan_police_v76');
             renderTable();
         }
     }
 
     function addData() {
         if (dataList.length >= 100) { alert("上限 100 筆"); return; }
-        const unit = document.getElementById('unit').value;
+        const unitRaw = document.getElementById('unit').value;
+        const unit = unitRaw.split('.')[1] || unitRaw;
         const range = document.getElementById('rangeRadius').value || "50";
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
 
-        if (!loc || !coords) { alert("資訊不完整！請點擊地圖並輸入名稱。"); return; }
+        if (!loc || !coords) { alert("資訊不完整！請在地圖選點並輸入名稱。"); return; }
         const parts = coords.split(', ');
         
         dataList.push({ unit, district: selectedDistrictName, loc, range, lat: parts[0], lng: parts[1] });
@@ -299,12 +298,13 @@
 
     function exportToExcel() {
         if (dataList.length === 0) return;
+        // 匯出欄位標題維持「範圍(公尺)」
         const exportData = dataList.map((item, index) => ({
             "序號": index + 1, "單位": item.unit, "行政區": item.district, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "座標採集結果");
+        XLSX.utils.book_append_sheet(wb, ws, "座標結果");
         const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
         XLSX.writeFile(wb, `${document.getElementById('unit').value}_臺南座標採集_${dateStr}.xlsx`);
     }
