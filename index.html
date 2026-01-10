@@ -156,11 +156,11 @@
                 <div class="card-header">3. 命名與儲存</div>
                 <div class="form-group">
                     <label>位置名稱</label>
-                    <input type="text" id="locName" placeholder="如：路口名稱..." onkeydown="if(event.key==='Enter') addData()">
+                    <input type="text" id="locName" placeholder="如：西門路府前路口" onkeydown="if(event.key==='Enter') addData()">
                 </div>
                 <div class="form-group">
                     <label>分析範圍 (公尺)</label>
-                    <input type="number" id="rangeRadius" value="50">
+                    <input type="number" id="rangeRadius" value="30" placeholder="預設 30 公尺">
                 </div>
                 <div class="form-group">
                     <label>點地圖位置自動帶入</label>
@@ -231,6 +231,14 @@
     function initMap() {
         map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([22.997, 120.211], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
+        // 增加尺標 (Scale Control)
+        L.control.scale({ 
+            metric: true, 
+            imperial: false, 
+            position: 'bottomleft' 
+        }).addTo(map);
+
         currentMarker = L.marker([0,0]);
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
         let checkSize = setInterval(() => { map.invalidateSize(); if (document.getElementById('map').offsetWidth > 0) clearInterval(checkSize); }, 200);
@@ -252,20 +260,20 @@
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v78', JSON.stringify(dataList));
+        localStorage.setItem('tainan_police_v79', JSON.stringify(dataList));
         document.getElementById('backup-status').innerText = '已自動備份 ✓';
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v78');
+        const saved = localStorage.getItem('tainan_police_v79');
         if (saved) { dataList = JSON.parse(saved); renderTable(); }
     }
 
     function clearData() {
         if (confirm('⚠️ 確定清空所有採集紀錄？')) {
             dataList = [];
-            localStorage.removeItem('tainan_police_v78');
+            localStorage.removeItem('tainan_police_v79');
             renderTable();
         }
     }
@@ -275,7 +283,7 @@
         const unitRaw = document.getElementById('unit').value;
         const unit = unitRaw.split('.')[1] || unitRaw;
         const cat = document.getElementById('category').value;
-        const range = document.getElementById('rangeRadius').value || "50";
+        const range = document.getElementById('rangeRadius').value || "30";
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
 
@@ -295,7 +303,7 @@
         tbody.innerHTML = '';
         dataList.forEach((item, i) => {
             tbody.innerHTML += `<tr>
-                <td>${i+1}</td>
+                <td style="color:#999">${i+1}</td>
                 <td><b>${item.unit}</b></td>
                 <td><span class="cat-tag">${item.district}</span></td>
                 <td>${item.category}</td>
@@ -316,13 +324,13 @@
     function exportToExcel() {
         if (dataList.length === 0) return;
         const exportData = dataList.map((item, index) => ({
-            "序號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
+            "編號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "座標結果");
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, ws, "座標結果");
         const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
-        XLSX.writeFile(wb, `${document.getElementById('unit').value}_臺南座標採集_${dateStr}.xlsx`);
+        XLSX.writeFile(workbook, `${document.getElementById('unit').value}_臺南座標採集_${dateStr}.xlsx`);
     }
 </script>
 
