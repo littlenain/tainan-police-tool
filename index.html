@@ -110,62 +110,51 @@
                 <div class="form-group">
                     <label>單位名稱</label>
                     <select id="unit">
-                        <option value="新營分局">1.新營分局</option>
-                        <option value="白河分局">2.白河分局</option>
-                        <option value="麻豆分局">3.麻豆分局</option>
-                        <option value="佳里分局">4.佳里分局</option>
-                        <option value="學甲分局">5.學甲分局</option>
-                        <option value="善化分局">6.善化分局</option>
-                        <option value="新化分局">7.新化分局</option>
-                        <option value="歸仁分局">8.歸仁分局</option>
-                        <option value="玉井分局">9.玉井分局</option>
-                        <option value="永康分局">10.永康分局</option>
-                        <option value="第一分局">11.第一分局</option>
-                        <option value="第二分局">12.第二分局</option>
-                        <option value="第三分局">13.第三分局</option>
-                        <option value="第四分局">14.第四分局</option>
-                        <option value="第五分局">15.第五分局</option>
-                        <option value="第六分局">16.第六分局</option>
+                        <option value="新營分局">1.新營分局</option><option value="白河分局">2.白河分局</option>
+                        <option value="麻豆分局">3.麻豆分局</option><option value="佳里分局">4.佳里分局</option>
+                        <option value="學甲分局">5.學甲分局</option><option value="善化分局">6.善化分局</option>
+                        <option value="新化分局">7.新化分局</option><option value="歸仁分局">8.歸仁分局</option>
+                        <option value="玉井分局">9.玉井分局</option><option value="永康分局">10.永康分局</option>
+                        <option value="第一分局">11.第一分局</option><option value="第二分局">12.第二分局</option>
+                        <option value="第三分局">13.第三分局</option><option value="第四分局">14.第四分局</option>
+                        <option value="第五分局">15.第五分局</option><option value="第六分局">16.第六分局</option>
                         <option value="交通警察大隊">17.交通警察大隊</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>查找範圍 (公尺)</label>
-                    <input type="number" id="rangeRadius" value="50" placeholder="預設 50 公尺">
+                    <input type="number" id="rangeRadius" value="50">
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-header">2. 行政區跳轉</div>
+                <div class="card-header">2. 快速搜尋行政區</div>
                 <div class="form-group">
-                    <label>選擇行政區 (自動帶入)</label>
-                    <select id="districtJump" onchange="handleDistrictChange()">
-                        <option value="">-- 請選擇 --</option>
-                        <option value="23.2995,120.3159,新營區">新營區</option>
-                        <option value="23.1612,120.1765,佳里區">佳里區</option>
-                        <option value="23.0485,120.2455,永康區">永康區</option>
-                        <option value="22.9915,120.2025,中西區">中西區</option>
-                        <option value="23.0065,120.2115,北區">北區</option>
-                        <option value="22.985,120.224,東區">東區</option>
-                        <option value="22.960,120.183,南區">南區</option>
-                        <option value="23.048,120.185,安南區">安南區</option>
-                        <option value="23.001,120.161,安平區">安平區</option>
-                    </select>
+                    <label>輸入區名 (自動帶入)</label>
+                    <input type="text" id="districtSearch" list="districtList" placeholder="輸入後點選即跳轉" oninput="handleDistrictSearch()">
+                    <datalist id="districtList">
+                        <option value="新營區"> <option value="鹽水區"> <option value="白河區"> <option value="柳營區"> <option value="後壁區"> <option value="東山區">
+                        <option value="麻豆區"> <option value="下營區"> <option value="六甲區"> <option value="官田區"> <option value="大內區"> <option value="佳里區">
+                        <option value="學甲區"> <option value="西港區"> <option value="七股區"> <option value="將軍區"> <option value="北門區"> <option value="新化區">
+                        <option value="善化區"> <option value="新市區"> <option value="安定區"> <option value="山上區"> <option value="玉井區"> <option value="楠西區">
+                        <option value="南化區"> <option value="左鎮區"> <option value="仁德區"> <option value="歸仁區"> <option value="關廟區"> <option value="龍崎區">
+                        <option value="永康區"> <option value="東區"> <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
+                    </datalist>
                 </div>
-                <div class="tip-box">💡 選擇後地圖會跳轉，並自動記錄該區。</div>
+                <div class="tip-box">💡 選擇行政區後，地圖飛過去且系統會自動記錄。</div>
             </div>
 
             <div class="card">
                 <div class="card-header">3. 命名與儲存</div>
                 <div class="form-group">
-                    <label>位置描述</label>
-                    <input type="text" id="locName" placeholder="如：西門路府前路口" onkeydown="if(event.key==='Enter') addData()">
+                    <label>位置名稱</label>
+                    <input type="text" id="locName" placeholder="描述路口或地標" onkeydown="if(event.key==='Enter') addData()">
                 </div>
                 <div class="form-group">
                     <label>📍 座標值</label>
-                    <input type="text" id="coords" readonly placeholder="由地圖自動帶入">
+                    <input type="text" id="coords" readonly placeholder="請在地圖點選">
                 </div>
-                <button class="btn btn-add" onclick="addData()">✚ 加入採集清單</button>
+                <button class="btn btn-add" onclick="addData()">✚ 加入清單</button>
             </div>
         </div>
         
@@ -190,7 +179,7 @@
                     <th style="width:50px">#</th>
                     <th>單位</th>
                     <th>行政區</th>
-                    <th>位置名稱</th>
+                    <th>名稱</th>
                     <th>範圍(m)</th>
                     <th>緯度</th>
                     <th>經度</th>
@@ -201,16 +190,26 @@
         </table>
     </div>
 
-    <div class="author">開發作者：NIENCHEN TSAI | 臺南市政府警察局交通分析專用</div>
+    <div class="author">開發作者：NIENCHEN TSAI | 臺南市政府警察局專用工具</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     let dataList = [];
     let map, currentMarker;
-    let currentDistrict = "未指定"; 
+    let selectedDistrictName = "未指定"; 
     let hasClicked = false;
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
+
+    // 內建全市 37 區座標
+    const allDistricts = {
+        "新營區": [23.308, 120.317], "鹽水區": [23.320, 120.266], "白河區": [23.351, 120.415], "柳營區": [23.277, 120.311], "後壁區": [23.365, 120.362], "東山區": [23.323, 120.404],
+        "麻豆區": [23.181, 120.252], "下營區": [23.223, 120.263], "六甲區": [23.231, 120.347], "官田區": [23.181, 120.318], "大內區": [23.119, 120.402], "佳里區": [23.161, 120.176],
+        "學甲區": [23.232, 120.180], "西港區": [23.123, 120.203], "七股區": [23.141, 120.138], "將軍區": [23.203, 120.154], "北門區": [23.268, 120.124], "新化區": [23.033, 120.334],
+        "善化區": [23.131, 120.295], "新市區": [23.078, 120.301], "安定區": [23.121, 120.236], "山上區": [23.102, 120.354], "玉井區": [23.125, 120.463], "楠西區": [23.174, 120.512],
+        "南化區": [23.045, 120.543], "左鎮區": [23.012, 120.415], "仁德區": [22.971, 120.252], "歸仁區": [22.968, 120.285], "關廟區": [22.961, 120.328], "龍崎區": [22.965, 120.360],
+        "永康區": [23.025, 120.254], "東區": [22.985, 120.224], "南區": [22.960, 120.183], "北區": [23.006, 120.211], "安南區": [23.048, 120.185], "安平區": [23.001, 120.161], "中西區": [22.991, 120.202]
+    };
 
     window.onload = function() {
         initMap();
@@ -222,8 +221,6 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         currentMarker = L.marker([0,0]);
         map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
-        
-        // 暴力重繪機制防止地圖空白
         let checkSize = setInterval(() => { map.invalidateSize(); if (document.getElementById('map').offsetWidth > 0) clearInterval(checkSize); }, 200);
     }
 
@@ -233,41 +230,45 @@
         document.getElementById('coords').value = lat + ", " + lng;
     }
 
-    function handleDistrictChange() {
-        const val = document.getElementById('districtJump').value;
-        if (val) {
-            const [lat, lng, name] = val.split(',');
-            map.setView([parseFloat(lat), parseFloat(lng)], 15);
-            currentDistrict = name; // 記住當前行政區
+    function handleDistrictSearch() {
+        const input = document.getElementById('districtSearch');
+        const val = input.value.trim();
+        if (allDistricts[val]) {
+            map.setView(allDistricts[val], 15);
+            selectedDistrictName = val; // 智慧記憶行政區
         }
     }
 
     function saveBackup() {
-        localStorage.setItem('tainan_police_v71', JSON.stringify(dataList));
-        document.getElementById('backup-status').innerText = '已保存 ✓';
+        localStorage.setItem('tainan_police_v75', JSON.stringify(dataList));
+        document.getElementById('backup-status').innerText = '已自動備份 ✓';
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
     function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v71');
+        const saved = localStorage.getItem('tainan_police_v75');
         if (saved) { dataList = JSON.parse(saved); renderTable(); }
     }
 
     function clearData() {
-        if (confirm('確定清空所有採集資料？')) { dataList = []; localStorage.removeItem('tainan_police_v71'); renderTable(); }
+        if (confirm('⚠️ 確定清空採集紀錄？')) {
+            dataList = [];
+            localStorage.removeItem('tainan_police_v75');
+            renderTable();
+        }
     }
 
     function addData() {
-        if (dataList.length >= 100) { alert("已達 100 筆上限"); return; }
+        if (dataList.length >= 100) { alert("上限 100 筆"); return; }
         const unit = document.getElementById('unit').value;
         const range = document.getElementById('rangeRadius').value || "50";
         const loc = document.getElementById('locName').value.trim();
         const coords = document.getElementById('coords').value;
 
-        if (!loc || !coords) { alert("資訊不完整，請填寫名稱並點選地圖座標！"); return; }
+        if (!loc || !coords) { alert("資訊不完整！請點擊地圖並輸入名稱。"); return; }
         const parts = coords.split(', ');
         
-        dataList.push({ unit, district: currentDistrict, loc, range, lat: parts[0], lng: parts[1] });
+        dataList.push({ unit, district: selectedDistrictName, loc, range, lat: parts[0], lng: parts[1] });
         renderTable(); saveBackup();
         document.getElementById('locName').value = '';
         document.getElementById('coords').value = '';
@@ -279,7 +280,7 @@
         tbody.innerHTML = '';
         dataList.forEach((item, i) => {
             tbody.innerHTML += `<tr>
-                <td style="color:#999">${i+1}</td>
+                <td>${i+1}</td>
                 <td><b>${item.unit}</b></td>
                 <td><span class="cat-tag">${item.district}</span></td>
                 <td>${item.loc}</td>
@@ -299,7 +300,7 @@
     function exportToExcel() {
         if (dataList.length === 0) return;
         const exportData = dataList.map((item, index) => ({
-            "編號": index + 1, "單位": item.unit, "行政區": item.district, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
+            "序號": index + 1, "單位": item.unit, "行政區": item.district, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
