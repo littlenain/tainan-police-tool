@@ -85,6 +85,7 @@
         th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); }
         td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
 
+        /* 手機版適配 */
         @media (max-width: 992px) {
             .content-layout { grid-template-columns: 1fr; }
             #map-container { height: 450px; order: -1; }
@@ -149,7 +150,7 @@
                         <option value="永康區"> <option value="東區"> <option value="南區"> <option value="北區"> <option value="安南區"> <option value="安平區"> <option value="中西區">
                     </datalist>
                 </div>
-                <div class="tip-box">💡 選擇行政區後，地圖會飛過去且系統會自動記錄。</div>
+                <div class="tip-box">💡 地圖會飛過去且系統自動記錄該區。</div>
             </div>
 
             <div class="card">
@@ -208,131 +209,4 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    let dataList = [];
-    let map, currentMarker;
-    let selectedDistrictName = "未指定"; 
-    let hasClicked = false;
-    const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
-
-    const allDistricts = {
-        "新營區": [23.308, 120.317], "鹽水區": [23.320, 120.266], "白河區": [23.351, 120.415], "柳營區": [23.277, 120.311], "後壁區": [23.365, 120.362], "東山區": [23.323, 120.404],
-        "麻豆區": [23.181, 120.252], "下營區": [23.223, 120.263], "六甲區": [23.231, 120.347], "官田區": [23.181, 120.318], "大內區": [23.119, 120.402], "佳里區": [23.161, 120.176],
-        "學甲區": [23.232, 120.180], "西港區": [23.123, 120.203], "七股區": [23.141, 120.138], "將軍區": [23.203, 120.154], "北門區": [23.268, 120.124], "新化區": [23.033, 120.334],
-        "善化區": [23.131, 120.295], "新市區": [23.078, 120.301], "安定區": [23.121, 120.236], "山上區": [23.102, 120.354], "玉井區": [23.125, 120.463], "楠西區": [23.174, 120.512],
-        "南化區": [23.045, 120.543], "左鎮區": [23.012, 120.415], "仁德區": [22.971, 120.252], "歸仁區": [22.968, 120.285], "關廟區": [22.961, 120.328], "龍崎區": [22.965, 120.360],
-        "永康區": [23.025, 120.254], "東區": [22.985, 120.224], "南區": [22.960, 120.183], "北區": [23.006, 120.211], "安南區": [23.048, 120.185], "安平區": [23.001, 120.161], "中西區": [22.991, 120.202]
-    };
-
-    window.onload = function() {
-        initMap();
-        loadBackup();
-    };
-
-    function initMap() {
-        map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([22.997, 120.211], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        
-        // 增加尺標 (Scale Control)
-        L.control.scale({ 
-            metric: true, 
-            imperial: false, 
-            position: 'bottomleft' 
-        }).addTo(map);
-
-        currentMarker = L.marker([0,0]);
-        map.on('click', function(e) { updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)); });
-        let checkSize = setInterval(() => { map.invalidateSize(); if (document.getElementById('map').offsetWidth > 0) clearInterval(checkSize); }, 200);
-    }
-
-    function updateMarker(lat, lng) {
-        if (!hasClicked) { currentMarker.addTo(map); hasClicked = true; }
-        currentMarker.setLatLng([lat, lng]);
-        document.getElementById('coords').value = lat + ", " + lng;
-    }
-
-    function handleDistrictSearch() {
-        const input = document.getElementById('districtSearch');
-        const val = input.value.trim();
-        if (allDistricts[val]) {
-            map.setView(allDistricts[val], 15);
-            selectedDistrictName = val;
-        }
-    }
-
-    function saveBackup() {
-        localStorage.setItem('tainan_police_v79', JSON.stringify(dataList));
-        document.getElementById('backup-status').innerText = '已自動備份 ✓';
-        setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
-    }
-
-    function loadBackup() {
-        const saved = localStorage.getItem('tainan_police_v79');
-        if (saved) { dataList = JSON.parse(saved); renderTable(); }
-    }
-
-    function clearData() {
-        if (confirm('⚠️ 確定清空所有採集紀錄？')) {
-            dataList = [];
-            localStorage.removeItem('tainan_police_v79');
-            renderTable();
-        }
-    }
-
-    function addData() {
-        if (dataList.length >= 100) { alert("上限 100 筆"); return; }
-        const unitRaw = document.getElementById('unit').value;
-        const unit = unitRaw.split('.')[1] || unitRaw;
-        const cat = document.getElementById('category').value;
-        const range = document.getElementById('rangeRadius').value || "30";
-        const loc = document.getElementById('locName').value.trim();
-        const coords = document.getElementById('coords').value;
-
-        if (!cat) { alert("請選取【勤務項目】！"); return; }
-        if (!loc || !coords) { alert("資訊不完整！請在點地圖位置自動帶入。"); return; }
-        const parts = coords.split(', ');
-        
-        dataList.push({ unit, district: selectedDistrictName, category: cat, loc, range, lat: parts[0], lng: parts[1] });
-        renderTable(); saveBackup();
-        document.getElementById('locName').value = '';
-        document.getElementById('coords').value = '';
-        if(hasClicked) { map.removeLayer(currentMarker); hasClicked = false; }
-    }
-
-    function renderTable() {
-        const tbody = document.getElementById('dataBody');
-        tbody.innerHTML = '';
-        dataList.forEach((item, i) => {
-            tbody.innerHTML += `<tr>
-                <td style="color:#999">${i+1}</td>
-                <td><b>${item.unit}</b></td>
-                <td><span class="cat-tag">${item.district}</span></td>
-                <td>${item.category}</td>
-                <td>${item.loc}</td>
-                <td>${item.range}m</td>
-                <td style="font-family: monospace;">${item.lat}</td>
-                <td style="font-family: monospace;">${item.lng}</td>
-                <td style="text-align:center"><button onclick="deleteData(${i})" style="color:var(--main-rose); border:none; background:none; font-weight:bold; cursor:pointer;">刪除</button></td>
-            </tr>`;
-        });
-        document.getElementById('dataCount').innerText = dataList.length;
-    }
-
-    function deleteData(index) {
-        dataList.splice(index, 1); renderTable(); saveBackup();
-    }
-
-    function exportToExcel() {
-        if (dataList.length === 0) return;
-        const exportData = dataList.map((item, index) => ({
-            "編號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
-        }));
-        const ws = XLSX.utils.json_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, ws, "座標結果");
-        const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
-        XLSX.writeFile(workbook, `${document.getElementById('unit').value}_臺南座標採集_${dateStr}.xlsx`);
-    }
-</script>
-
-</body>
-</html>
+    let dataList
