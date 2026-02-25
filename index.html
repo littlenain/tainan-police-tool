@@ -160,8 +160,8 @@
                     <input type="text" id="pt-locName" placeholder="如：西門路府前路口">
                 </div>
                 <div class="form-group">
-                    <label>分析範圍 (公尺) - <small>調整後地圖圈選範圍會即時改變</small></label>
-                    <input type="number" id="pt-range" value="30" oninput="updatePointVisuals()">
+                    <label>分析範圍半徑 (公尺)</label>
+                    <input type="number" id="pt-range" value="30">
                 </div>
                 <div class="form-group">
                     <label>📍 點地圖自動帶入座標</label>
@@ -177,8 +177,8 @@
                     <input type="text" id="seg-roadName" placeholder="如：中華北路一段彎道">
                 </div>
                 <div class="form-group">
-                    <label>路段寬度 (公尺) - <small>調整後地圖軌跡寬度會即時改變</small></label>
-                    <input type="number" id="seg-width" value="15" placeholder="預設 15 公尺" oninput="updateSegmentVisuals()">
+                    <label>分析路段寬度 (公尺)</label>
+                    <input type="number" id="seg-width" value="15" placeholder="預設 15 公尺">
                 </div>
                 <div class="tip-box" style="margin-bottom: 15px;">
                     <b>操作說明：</b><br>1. 沿著道路在地圖上<b>連續點選</b>描繪軌跡。<br>2. 畫完按下下方【加入路段清單】。
@@ -195,7 +195,7 @@
         
         <div class="map-wrapper">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <b style="color:var(--main-rose)">🗺️ 地圖作業區</b>
+                <b style="color:var(--main-rose)">🗺️ 地圖作業區 (動態模擬範圍)</b>
                 <button class="btn btn-refresh" onclick="refreshMap()">🔄 重整地圖</button>
             </div>
             <div id="map-container"><div id="map"></div></div>
@@ -216,7 +216,7 @@
             <thead>
                 <tr>
                     <th style="width:40px">#</th>
-                    <th>單位</th><th>行政區</th><th>勤務項目</th><th>處所名稱</th><th>範圍(m)</th>
+                    <th>單位</th><th>行政區</th><th>勤務項目</th><th>處所名稱</th><th>半徑範圍(m)</th>
                     <th>緯度</th><th>經度</th><th style="width:60px; text-align:center">操作</th>
                 </tr>
             </thead>
@@ -238,7 +238,7 @@
         </table>
     </div>
 
-    <div class="author">開發工具：NIENCHEN TSAI | 專供臺南市政府警察局交通分析使用</div>
+    <div class="author">開發工具：NIENCHEN TSAI | 專供臺南市政府警察局交通分析使用 V12.0</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -249,27 +249,25 @@
     
     let map;
     let selectedDistrictName = ""; 
-    
-    // 地圖圖層變數
     let tempPointMarker = null;
-    let rangeCircle = null; // 路口範圍圓
+    let tempPointCircle = null; // 用來模擬單點的圓形範圍
     
-    let segMarkers = [];
-    let segCoords = [];
-    let segLine = null; // 軌跡中心線
-    let segBufferLine = null; // 路段寬度示意帶
-    
-    // 自訂 SVG 胭脂紅水滴圖釘 (縮小版)
-    // 將 width/height 從 36/54 縮小至 18/27，並重新調整 viewBox 與 anchor
+    // 自訂 SVG 胭脂紅水滴圖釘 (縮小版，寬20高30)
     const customPinIcon = L.divIcon({
         className: 'custom-pin',
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="18" height="27">
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="20" height="30">
                  <path d="M12 0C5.373 0 0 5.373 0 12c0 8.4 12 24 12 24s12-15.6 12-24c0-6.627-5.373-12-12-12zm0 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12z" 
-                       fill="#D05A6E" stroke="#FFFFFF" stroke-width="1" style="filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));"/>
+                       fill="#D05A6E" stroke="#FFFFFF" stroke-width="2" style="filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.4));"/>
                </svg>`,
-        iconSize: [18, 27],
-        iconAnchor: [9, 27] // 設定錨點在圖釘最下方尖端中心
+        iconSize: [20, 30],
+        iconAnchor: [10, 30] // 錨點設定在底部正中央，確保定位誤差為零
     });
+
+    // 多節點軌跡專用變數
+    let segMarkers = [];
+    let segNodeCircles = []; // 用來模擬路寬的圓圈群組
+    let segCoords = [];
+    let segLine = null;
 
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
     const allDistricts = { "新營區": [23.308, 120.317], "鹽水區": [23.320, 120.266], "白河區": [23.351, 120.415], "柳營區": [23.277, 120.311], "後壁區": [23.365, 120.362], "東山區": [23.323, 120.404], "麻豆區": [23.181, 120.252], "下營區": [23.223, 120.263], "六甲區": [23.231, 120.347], "官田區": [23.181, 120.318], "大內區": [23.119, 120.402], "佳里區": [23.161, 120.176], "學甲區": [23.232, 120.180], "西港區": [23.123, 120.203], "七股區": [23.141, 120.138], "將軍區": [23.203, 120.154], "北門區": [23.268, 120.124], "新化區": [23.033, 120.334], "善化區": [23.131, 120.295], "新市區": [23.078, 120.301], "安定區": [23.121, 120.236], "山上區": [23.102, 120.354], "玉井區": [23.125, 120.463], "楠西區": [23.174, 120.512], "南化區": [23.045, 120.543], "左鎮區": [23.012, 120.415], "仁德區": [22.971, 120.252], "歸仁區": [22.968, 120.285], "關廟區": [22.961, 120.328], "龍崎區": [22.965, 120.360], "永康區": [23.025, 120.254], "東區": [22.985, 120.224], "南區": [22.960, 120.183], "北區": [23.006, 120.211], "安南區": [23.048, 120.185], "安平區": [23.001, 120.161], "中西區": [22.991, 120.202] };
@@ -277,6 +275,7 @@
     window.onload = function() {
         initMap();
         loadBackups();
+        setupDynamicRadius(); // 綁定動態範圍連動事件
     };
 
     function initMap() {
@@ -289,6 +288,26 @@
 
         map.on('click', handleMapClick);
         setInterval(() => { map.invalidateSize(); }, 500);
+    }
+
+    // 讓使用者輸入數字時，地圖的圓圈能即時放大縮小
+    function setupDynamicRadius() {
+        // 路口範圍連動
+        document.getElementById('pt-range').addEventListener('input', function(e) {
+            const range = parseFloat(e.target.value) || 0;
+            if(tempPointCircle) {
+                tempPointCircle.setRadius(range);
+            }
+        });
+
+        // 路段寬度連動 (半徑 = 寬度 / 2)
+        document.getElementById('seg-width').addEventListener('input', function(e) {
+            const width = parseFloat(e.target.value) || 0;
+            const radius = width / 2;
+            segNodeCircles.forEach(circle => {
+                circle.setRadius(radius);
+            });
+        });
     }
 
     function refreshMap() {
@@ -308,75 +327,24 @@
     }
 
     function clearTempMapLayers() {
-        // 清除路口模式圖層
         if(tempPointMarker) map.removeLayer(tempPointMarker);
-        if(rangeCircle) map.removeLayer(rangeCircle);
-        tempPointMarker = null;
-        rangeCircle = null;
+        if(tempPointCircle) map.removeLayer(tempPointCircle);
         
-        // 清除路段模式圖層
+        // 清除多節點陣列與線段
         segMarkers.forEach(m => map.removeLayer(m));
+        segNodeCircles.forEach(c => map.removeLayer(c));
         if(segLine) map.removeLayer(segLine);
-        if(segBufferLine) map.removeLayer(segBufferLine);
         
+        tempPointMarker = null;
+        tempPointCircle = null;
         segMarkers = [];
+        segNodeCircles = [];
         segCoords = [];
         segLine = null;
-        segBufferLine = null;
         
         document.getElementById('pt-coords').value = "";
         document.getElementById('seg-nodeCount').value = "目前：0 個點";
     }
-
-    // --- 即時更新視覺效果函數 ---
-
-    // 更新路口範圍圓
-    function updatePointVisuals() {
-        if (!tempPointMarker) return; // 如果還沒點地圖就不執行
-        const radius = parseFloat(document.getElementById('pt-range').value) || 30;
-        const latlng = tempPointMarker.getLatLng();
-
-        if (rangeCircle) {
-            rangeCircle.setRadius(radius);
-            rangeCircle.setLatLng(latlng);
-        } else {
-            // 繪製新的半透明紅色圓圈 (使用公尺為單位)
-            rangeCircle = L.circle(latlng, {
-                color: '#D05A6E',
-                fillColor: '#D05A6E',
-                fillOpacity: 0.3,
-                weight: 1,
-                radius: radius
-            }).addTo(map);
-        }
-    }
-
-    // 更新路段寬度示意帶
-    function updateSegmentVisuals() {
-        if (segCoords.length < 2) return; // 如果節點不夠就不執行
-        
-        // 使用像素寬度來模擬路寬，這是一個視覺近似值
-        // 實際公尺寬度繪製需要複雜的 GIS 計算，這裡用簡易方式呈現視覺效果
-        const widthMeter = parseFloat(document.getElementById('seg-width').value) || 15;
-        // 將公尺粗略轉換為像素寬度 (這只是一個視覺參考比例)
-        const pixelWeight = widthMeter * 1.5; 
-
-        if (segBufferLine) {
-            segBufferLine.setLatLngs(segCoords);
-            segBufferLine.setStyle({ weight: pixelWeight });
-        } else {
-            // 繪製底層寬帶 (半透明)
-            segBufferLine = L.polyline(segCoords, {
-                color: '#D05A6E',
-                weight: pixelWeight,
-                opacity: 0.3,
-                lineCap: 'butt' // 平頭線端，連接更平滑
-            }).addTo(map);
-             // 將中心線移到最上層
-            if(segLine) segLine.bringToFront();
-        }
-    }
-
 
     function handleMapClick(e) {
         const lat = e.latlng.lat.toFixed(6);
@@ -384,30 +352,40 @@
         const coordStr = `${lat}, ${lng}`;
 
         if (currentMode === 'point') {
-            // 使用縮小版的自訂圖釘
+            const range = parseFloat(document.getElementById('pt-range').value) || 30;
+            
             if (!tempPointMarker) { 
                 tempPointMarker = L.marker([lat, lng], {icon: customPinIcon}).addTo(map); 
+                // 加入範圍模擬圈 (視覺化 Buffer)
+                tempPointCircle = L.circle([lat, lng], {
+                    radius: range, color: '#D05A6E', weight: 2, fillOpacity: 0.15, dashArray: '5, 5'
+                }).addTo(map);
             } else { 
                 tempPointMarker.setLatLng([lat, lng]); 
+                tempPointCircle.setLatLng([lat, lng]); 
+                tempPointCircle.setRadius(range);
             }
             document.getElementById('pt-coords').value = coordStr;
-            // 點擊後立即繪製/更新範圍圓
-            updatePointVisuals();
-        } 節
+        } 
         else if (currentMode === 'segment') {
-            const m = L.circleMarker([lat, lng], {color: '#D05A6E', radius: 5, fillOpacity: 0.9, weight: 2, color: 'white'}).addTo(map);
+            const width = parseFloat(document.getElementById('seg-width').value) || 15;
+            
+            // 加入中心節點小圓
+            const m = L.circleMarker([lat, lng], {color: '#D05A6E', radius: 4, fillOpacity: 1}).addTo(map);
             segMarkers.push(m);
             segCoords.push([lat, lng]);
             
-            // 先繪製/更新寬度帶
-            updateSegmentVisuals();
-
-            // 再繪製中心實線
+            // 加入路寬模擬圈 (視覺化 Buffer)
+            const c = L.circle([lat, lng], {
+                radius: width / 2, color: '#D05A6E', weight: 1, fillOpacity: 0.1
+            }).addTo(map);
+            segNodeCircles.push(c);
+            
+            // 重繪核心軌跡線
             if (segLine) map.removeLayer(segLine);
             if (segCoords.length > 1) {
-                segLine = L.polyline(segCoords, {color: '#D05A6E', weight: 4}).addTo(map);
+                segLine = L.polyline(segCoords, {color: '#D05A6E', weight: 4, dashArray: '6, 4'}).addTo(map);
             }
-            
             document.getElementById('seg-nodeCount').value = `目前：${segCoords.length} 個點`;
         }
     }
@@ -540,7 +518,7 @@
                 "行政區": item.district, 
                 "勤務項目": item.category, 
                 "處所名稱": item.loc, 
-                "範圍(公尺)": item.range, 
+                "半徑範圍(公尺)": item.range, 
                 "緯度": item.lat, 
                 "經度": item.lng
             }));
