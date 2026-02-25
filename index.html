@@ -99,11 +99,11 @@
 <body>
 
 <div class="container">
-    <h1 class="main-title"><span class="police-car">??</span> 臺南市警察局交通分析專用座標採集工具</h1>
+    <h1 class="main-title"><span class="police-car">🚓</span> 臺南市警察局交通分析專用座標採集工具</h1>
     
     <div class="tabs">
-        <button class="tab-btn active" id="tab-point" onclick="switchMode('point')">?? 路口/處所 (單點)</button>
-        <button class="tab-btn" id="tab-segment" onclick="switchMode('segment')">??? 路段採集 (起迄點)</button>
+        <button class="tab-btn active" id="tab-point" onclick="switchMode('point')">📍 路口/處所 (單點)</button>
+        <button class="tab-btn" id="tab-segment" onclick="switchMode('segment')">🛣️ 路段採集 (起迄點)</button>
     </div>
 
     <div class="content-layout">
@@ -162,10 +162,10 @@
                     <input type="number" id="pt-range" value="30">
                 </div>
                 <div class="form-group">
-                    <label>?? 點地圖自動帶入座標</label>
+                    <label>📍 點地圖自動帶入座標</label>
                     <input type="text" id="pt-coords" class="readonly-coord" readonly placeholder="請在地圖點選座標">
                 </div>
-                <button class="btn btn-add" onclick="addPointData()">? 加入路口清單</button>
+                <button class="btn btn-add" onclick="addPointData()">✚ 加入路口清單</button>
             </div>
 
             <div id="panel-segment" class="mode-panel card">
@@ -178,35 +178,35 @@
                     <b>操作說明：</b><br>1. 點地圖標記【起點】<br>2. 點地圖標記【迄點】
                 </div>
                 <div class="form-group">
-                    <label>?? 起點描述與座標</label>
+                    <label>🟢 起點描述與座標</label>
                     <input type="text" id="seg-startDesc" placeholder="如：觀海橋" style="margin-bottom:5px;">
                     <input type="text" id="seg-startCoords" class="readonly-coord" readonly placeholder="點地圖第一下自動帶入">
                 </div>
                 <div class="form-group">
-                    <label>?? 迄點描述與座標</label>
+                    <label>🔴 迄點描述與座標</label>
                     <input type="text" id="seg-endDesc" placeholder="如：文賢路口" style="margin-bottom:5px;">
                     <input type="text" id="seg-endCoords" class="readonly-coord" readonly placeholder="點地圖第二下自動帶入">
                 </div>
-                <button class="btn btn-add" onclick="addSegmentData()">? 加入路段清單</button>
+                <button class="btn btn-add" onclick="addSegmentData()">✚ 加入路段清單</button>
             </div>
 
         </div>
         
         <div class="map-wrapper">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <b style="color:var(--main-rose)">??? 地圖作業區</b>
-                <button class="btn btn-refresh" onclick="refreshMap()">?? 重整地圖</button>
+                <b style="color:var(--main-rose)">🗺️ 地圖作業區</b>
+                <button class="btn btn-refresh" onclick="refreshMap()">🔄 重整地圖</button>
             </div>
             <div id="map-container"><div id="map"></div></div>
         </div>
     </div>
 
     <div class="status-bar">
-        <div><b>?? 目前分頁採集數：</b> <b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> 筆</div>
+        <div><b>📊 目前分頁採集數：</b> <b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> 筆</div>
         <div id="backup-status" style="color:var(--main-rose); font-weight:bold;"></div>
         <div style="display: flex; gap: 10px;">
-            <button class="btn btn-clear" onclick="clearCurrentData()">?? 清空當前分頁</button>
-            <button class="btn btn-export" onclick="exportCurrentExcel()">?? 匯出當前 Excel</button>
+            <button class="btn btn-clear" onclick="clearCurrentData()">🗑 清空當前分頁</button>
+            <button class="btn btn-export" onclick="exportCurrentExcel()">📥 匯出當前 Excel</button>
         </div>
     </div>
     
@@ -357,7 +357,7 @@
         const unit = unitRaw.split('.')[1] || unitRaw;
         const cat = document.getElementById('category').value;
         if (!cat) { alert("請選取【勤務項目】！"); return false; }
-        if (!selectedDistrictName) { alert("?? 請務必選擇【行政區】！"); document.getElementById('districtSearch').focus(); return false; }
+        if (!selectedDistrictName) { alert("⚠️ 請務必選擇【行政區】！"); document.getElementById('districtSearch').focus(); return false; }
         return { unit, category: cat, district: selectedDistrictName };
     }
 
@@ -444,7 +444,7 @@
     }
 
     function clearCurrentData() {
-        if (confirm(`?? 確定清空目前的【${currentMode === 'point' ? '路口' : '路段'}】紀錄？`)) {
+        if (confirm(`⚠️ 確定清空目前的【${currentMode === 'point' ? '路口' : '路段'}】紀錄？`)) {
             if(currentMode === 'point') { pointDataList = []; renderPointTable(); }
             else { segmentDataList = []; renderSegmentTable(); }
             saveBackups();
@@ -455,7 +455,7 @@
     function saveBackups() {
         localStorage.setItem('tainan_police_pt', JSON.stringify(pointDataList));
         localStorage.setItem('tainan_police_seg', JSON.stringify(segmentDataList));
-        document.getElementById('backup-status').innerText = '狀態已保存 ?';
+        document.getElementById('backup-status').innerText = '狀態已保存 ✓';
         setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
     }
 
