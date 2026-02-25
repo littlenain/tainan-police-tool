@@ -17,82 +17,46 @@
             --tab-inactive: #E0E0E0;
         }
 
-        body { 
-            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; 
-            background-color: var(--bg-color); color: var(--text-color); 
-            margin: 0; padding: 20px; font-size: 18px; 
-        }
-
-        .container { 
-            max-width: 1600px; margin: 0 auto; background: white; 
-            padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); 
-        }
-
-        .main-title {
-            color: var(--main-rose); font-weight: 900; font-size: 2.5rem;
-            margin: 0 0 15px 0; display: flex; align-items: center; gap: 15px;
-        }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; font-size: 18px; }
+        .container { max-width: 1600px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .main-title { color: var(--main-rose); font-weight: 900; font-size: 2.5rem; margin: 0 0 15px 0; display: flex; align-items: center; gap: 15px; }
         .police-car { font-size: 3rem; -webkit-text-fill-color: initial; }
 
-        /* --- 分頁切換 (Tabs) --- */
-        .tabs {
-            display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 3px solid var(--main-rose-light); padding-bottom: 5px;
-        }
-        .tab-btn {
-            padding: 12px 25px; font-size: 1.2rem; font-weight: 800; border: none; border-radius: 10px 10px 0 0;
-            cursor: pointer; transition: all 0.3s; background: var(--tab-inactive); color: #777;
-        }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 3px solid var(--main-rose-light); padding-bottom: 5px; }
+        .tab-btn { padding: 12px 25px; font-size: 1.1rem; font-weight: 800; border: none; border-radius: 10px 10px 0 0; cursor: pointer; background: var(--tab-inactive); color: #777; }
         .tab-btn.active { background: var(--main-rose); color: white; }
-        .tab-btn:hover:not(.active) { background: #d5d5d5; }
 
-        /* --- 內容佈局 --- */
         .content-layout { display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px; }
         .form-panel { flex: 0 0 295px; display: flex; flex-direction: column; gap: 20px; }
         .map-wrapper { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 10px; }
 
-        #map-container { 
-            width: 100%; height: 750px; border-radius: 15px; overflow: hidden; 
-            border: 5px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background-color: #e0e0e0;
-        }
+        #map-container { width: 100%; height: 750px; border-radius: 15px; overflow: hidden; border: 5px solid #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); background-color: #e0e0e0; }
         #map { width: 100%; height: 100%; z-index: 1; }
 
         .card { background: #ffffff; border: 1.5px solid #EAEAEA; border-radius: 12px; padding: 20px; box-sizing: border-box; }
         .card-header { font-weight: 800; font-size: 1.15rem; color: var(--main-rose-dark); margin-bottom: 12px; border-left: 6px solid var(--main-rose); padding-left: 10px; }
-        
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 1rem; color: #666; }
         input, select { width: 100%; padding: 12px; border: 1.5px solid #DDD; border-radius: 8px; font-size: 16px; color: var(--text-color); box-sizing: border-box; }
-        input:focus, select:focus { border-color: var(--main-rose); outline: none; background: #FFFBFB; }
-        .readonly-coord { background-color: #f5f5f5; color: #D05A6E; font-weight: bold; font-family: monospace; }
+        .readonly-coord { background-color: #f8f8f8; color: var(--main-rose); font-size: 0.85rem; word-break: break-all; }
 
         .btn { border: none; border-radius: 8px; padding: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.1rem; transition: all 0.2s; }
         .btn-add { background: var(--main-rose); color: white; width: 100%; }
-        .btn-add:hover { background: var(--main-rose-dark); box-shadow: 0 4px 12px rgba(208, 90, 110, 0.3); }
+        .btn-finish { background: #5c6bc0; color: white; width: 100%; margin-top: 10px; }
         .btn-export { background: var(--export-green); color: white; }
         .btn-clear { background: #E0E0E0; color: #555; }
-        .btn-refresh { background: #607d8b; color: white; padding: 8px 15px; font-size: 0.9rem; border-radius: 6px; width: fit-content; }
-
-        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 25px; background: #FDF8F8; border-radius: 12px; border: 1px solid var(--main-rose-light); }
         
+        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 25px; background: #FDF8F8; border-radius: 12px; border: 1px solid var(--main-rose-light); }
         .table-container { width: 100%; overflow-x: auto; border-radius: 10px; display: none; }
         .table-container.active { display: block; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1050px; }
-        th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); white-space: nowrap; }
-        td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
+        th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); }
+        td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 0.95rem; }
 
         .mode-panel { display: none; }
         .mode-panel.active { display: block; }
-
-        @media (max-width: 992px) {
-            .form-panel { flex: 1 1 100%; }
-            .map-wrapper { order: -1; height: 450px; }
-            #map-container { height: 100%; }
-            .main-title { font-size: 1.6rem; flex-direction: column; text-align: center; }
-        }
-
         .tip-box { background: #FFF9F9; color: #A54354; padding: 10px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--main-rose); margin-top: 5px; line-height: 1.4; }
-        .cat-tag { padding: 4px 8px; border-radius: 4px; background: var(--main-rose-light); color: var(--main-rose-dark); font-weight: bold; font-size: 0.9rem; }
-        .author { font-size: 12px; color: #999; text-align: right; margin-top: 50px; }
+        .cat-tag { padding: 4px 8px; border-radius: 4px; background: var(--main-rose-light); color: var(--main-rose-dark); font-weight: bold; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -102,14 +66,13 @@
     
     <div class="tabs">
         <button class="tab-btn active" id="tab-point" onclick="switchMode('point')">📍 路口/處所 (單點)</button>
-        <button class="tab-btn" id="tab-segment" onclick="switchMode('segment')">🛣️ 路段採集 (線段)</button>
+        <button class="tab-btn" id="tab-segment" onclick="switchMode('segment')">🛣️ 路段軌跡 (多點繪製)</button>
     </div>
 
     <div class="content-layout">
         <div class="form-panel">
-            
             <div class="card">
-                <div class="card-header">1. 基本資訊與行政區</div>
+                <div class="card-header">1. 基本資訊</div>
                 <div class="form-group">
                     <label>單位名稱</label>
                     <select id="unit">
@@ -128,16 +91,17 @@
                     <label>勤務項目</label>
                     <select id="category">
                         <option value="" disabled selected>請選擇項目...</option>
-                        <option value="專責守望">專責守望</option>
-                        <option value="交通稽查">交通稽查</option>
-                        <option value="巡邏兼守望">巡邏兼守望</option>
-                        <option value="勤查守望">勤查守望</option>
-                        <option value="科技執法/固定桿">科技執法/固定桿</option>
-                        <option value="其他">其他</option>
+                        <option value="專責守望">專責守望</option><option value="交通稽查">交通稽查</option>
+                        <option value="巡邏兼守望">巡邏兼守望</option><option value="勤查守望">勤查守望</option>
+                        <option value="科技執法/固定桿">科技執法/固定桿</option><option value="其他">其他</option>
                     </select>
                 </div>
-                <div class="form-group" style="margin-top: 20px;">
-                    <label>行政區 (必填，自動帶入)</label>
+            </div>
+
+            <div class="card">
+                <div class="card-header">2. 行政區</div>
+                <div class="form-group">
+                    <label>輸入區名 (自動帶入)</label>
                     <input type="text" id="districtSearch" list="districtList" placeholder="輸入後點選即跳轉" oninput="handleDistrictSearch()">
                     <datalist id="districtList">
                         <option value="新營區"><option value="鹽水區"><option value="白河區"><option value="柳營區"><option value="後壁區"><option value="東山區">
@@ -151,7 +115,7 @@
             </div>
 
             <div id="panel-point" class="mode-panel active card">
-                <div class="card-header">2. 處所命名與儲存</div>
+                <div class="card-header">3. 處所命名與儲存</div>
                 <div class="form-group">
                     <label>位置名稱</label>
                     <input type="text" id="pt-locName" placeholder="如：西門路府前路口">
@@ -161,86 +125,69 @@
                     <input type="number" id="pt-range" value="30">
                 </div>
                 <div class="form-group">
-                    <label>📍 點地圖自動帶入座標</label>
-                    <input type="text" id="pt-coords" class="readonly-coord" readonly placeholder="請在地圖點選座標">
+                    <label>📍 座標數值</label>
+                    <input type="text" id="pt-coords" class="readonly-coord" readonly placeholder="請在地圖點選">
                 </div>
                 <button class="btn btn-add" onclick="addPointData()">✚ 加入路口清單</button>
             </div>
 
             <div id="panel-segment" class="mode-panel card">
-                <div class="card-header">2. 路段命名與起迄點</div>
+                <div class="card-header">3. 路段軌跡繪製</div>
                 <div class="form-group">
-                    <label>路段主名稱</label>
-                    <input type="text" id="seg-roadName" placeholder="如：中華北路一段">
-                </div>
-                <div class="form-group">
-                    <label>路段寬度 (公尺)</label>
-                    <input type="number" id="seg-width" value="15" placeholder="預設 15 公尺">
-                </div>
-                <div class="tip-box" style="margin-bottom: 15px;">
-                    <b>操作說明：</b><br>1. 點地圖標記【起點】<br>2. 點地圖標記【迄點】
+                    <label>路段名稱</label>
+                    <input type="text" id="seg-roadName" placeholder="如：大同路彎道">
                 </div>
                 <div class="form-group">
-                    <label>🟢 起點描述與座標</label>
-                    <input type="text" id="seg-startDesc" placeholder="如：觀海橋" style="margin-bottom:5px;">
-                    <input type="text" id="seg-startCoords" class="readonly-coord" readonly placeholder="點地圖第一下自動帶入">
+                    <label>分析路寬 (公尺)</label>
+                    <input type="number" id="seg-width" value="15">
                 </div>
-                <div class="form-group">
-                    <label>🔴 迄點描述與座標</label>
-                    <input type="text" id="seg-endDesc" placeholder="如：文賢路口" style="margin-bottom:5px;">
-                    <input type="text" id="seg-endCoords" class="readonly-coord" readonly placeholder="點地圖第二下自動帶入">
+                <div class="tip-box">
+                    <b>操作說明：</b><br>1. 在地圖沿道路<b>連續點擊</b>描繪軌跡。<br>2. 點錯可用【重繪】清空暫存。<br>3. 畫完按下【✅ 儲存路段】。
                 </div>
-                <button class="btn btn-add" onclick="addSegmentData()">✚ 加入路段清單</button>
+                <div class="form-group" style="margin-top:10px;">
+                    <label>已採集節點數</label>
+                    <input type="text" id="seg-nodeCount" class="readonly-coord" readonly value="目前：0 個點">
+                </div>
+                <button class="btn btn-finish" onclick="addSegmentData()">✅ 完成這條路段並儲存</button>
+                <button class="btn btn-clear" style="margin-top:10px; font-size:0.9rem;" onclick="clearTempMapLayers()">❌ 軌跡重繪</button>
             </div>
-
         </div>
         
         <div class="map-wrapper">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <b style="color:var(--main-rose)">🗺️ 地圖作業區</b>
-                <button class="btn btn-refresh" onclick="refreshMap()">🔄 重整地圖</button>
+                <div>
+                    <button class="btn btn-refresh" style="display:inline-block" onclick="refreshMap()">🔄 重整</button>
+                </div>
             </div>
             <div id="map-container"><div id="map"></div></div>
         </div>
     </div>
 
     <div class="status-bar">
-        <div><b>📊 目前分頁採集數：</b> <b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b> 筆</div>
+        <div><b>📊 當前清單筆數：</b> <b id="dataCount" style="color:var(--main-rose); font-size: 1.4rem;">0</b></div>
         <div id="backup-status" style="color:var(--main-rose); font-weight:bold;"></div>
         <div style="display: flex; gap: 10px;">
-            <button class="btn btn-clear" onclick="clearCurrentData()">🗑 清空當前分頁</button>
-            <button class="btn btn-export" onclick="exportCurrentExcel()">📥 匯出當前 Excel</button>
+            <button class="btn btn-clear" onclick="clearCurrentData()">🗑 清空</button>
+            <button class="btn btn-export" onclick="exportCurrentExcel()">📥 匯出 Excel</button>
         </div>
     </div>
     
     <div id="table-point" class="table-container active">
         <table>
-            <thead>
-                <tr>
-                    <th style="width:40px">#</th>
-                    <th>單位</th><th>行政區</th><th>勤務項目</th><th>處所名稱</th><th>範圍(m)</th>
-                    <th>緯度</th><th>經度</th><th style="width:60px; text-align:center">操作</th>
-                </tr>
-            </thead>
+            <thead><tr><th>#</th><th>單位</th><th>行政區</th><th>勤務項目</th><th>處所名稱</th><th>範圍(m)</th><th>座標</th><th style="text-align:center">操作</th></tr></thead>
             <tbody id="tbody-point"></tbody>
         </table>
     </div>
 
     <div id="table-segment" class="table-container">
         <table>
-            <thead>
-                <tr>
-                    <th style="width:40px">#</th>
-                    <th>單位</th><th>行政區</th><th>勤務項目</th><th>路段主名稱</th>
-                    <th>路寬(m)</th> <th>起點描述</th><th>起點座標</th><th>迄點描述</th><th>迄點座標</th>
-                    <th style="width:60px; text-align:center">操作</th>
-                </tr>
-            </thead>
+            <thead><tr><th>#</th><th>單位</th><th>行政區</th><th>勤務項目</th><th>路段名稱</th><th>路寬(m)</th><th>節點數</th><th>軌跡座標串</th><th style="text-align:center">操作</th></tr></thead>
             <tbody id="tbody-segment"></tbody>
         </table>
     </div>
 
-    <div class="author">開發工具：NIENCHEN TSAI | 專供臺南市政府警察局交通分析使用</div>
+    <div class="author">開發工具：NIENCHEN TSAI | 臺南市政府警察局專用 V11.0</div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -248,38 +195,28 @@
     let currentMode = 'point'; 
     let pointDataList = [];
     let segmentDataList = [];
-    
-    let map;
-    let selectedDistrictName = ""; 
+    let map, selectedDistrictName = ""; 
     let tempPointMarker = null;
     
-    let segStartMarker = null;
-    let segEndMarker = null;
+    // 路段軌跡暫存
+    let segMarkers = [];
     let segLine = null;
-    let segClickCount = 0; 
+    let segCoords = [];
 
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
     const allDistricts = { "新營區": [23.308, 120.317], "鹽水區": [23.320, 120.266], "白河區": [23.351, 120.415], "柳營區": [23.277, 120.311], "後壁區": [23.365, 120.362], "東山區": [23.323, 120.404], "麻豆區": [23.181, 120.252], "下營區": [23.223, 120.263], "六甲區": [23.231, 120.347], "官田區": [23.181, 120.318], "大內區": [23.119, 120.402], "佳里區": [23.161, 120.176], "學甲區": [23.232, 120.180], "西港區": [23.123, 120.203], "七股區": [23.141, 120.138], "將軍區": [23.203, 120.154], "北門區": [23.268, 120.124], "新化區": [23.033, 120.334], "善化區": [23.131, 120.295], "新市區": [23.078, 120.301], "安定區": [23.121, 120.236], "山上區": [23.102, 120.354], "玉井區": [23.125, 120.463], "楠西區": [23.174, 120.512], "南化區": [23.045, 120.543], "左鎮區": [23.012, 120.415], "仁德區": [22.971, 120.252], "歸仁區": [22.968, 120.285], "關廟區": [22.961, 120.328], "龍崎區": [22.965, 120.360], "永康區": [23.025, 120.254], "東區": [22.985, 120.224], "南區": [22.960, 120.183], "北區": [23.006, 120.211], "安南區": [23.048, 120.185], "安平區": [23.001, 120.161], "中西區": [22.991, 120.202] };
 
-    window.onload = function() {
-        initMap();
-        loadBackups();
-    };
+    window.onload = () => { initMap(); loadBackups(); };
 
     function initMap() {
         map = L.map('map', { maxBounds: TAINAN_BOUNDS, maxBoundsViscosity: 1.0 }).setView([22.997, 120.211], 13);
-        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21 });
-        const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxNativeZoom: 19, maxZoom: 21 });
-        osmLayer.addTo(map);
-        L.control.layers({ "一般地圖": osmLayer, "衛星影像": satLayer }, null, { position: 'topright' }).addTo(map);
+        const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21 });
+        const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxNativeZoom: 19, maxZoom: 21 });
+        osm.addTo(map);
+        L.control.layers({ "一般地圖": osm, "衛星影像": sat }, null, { position: 'topright' }).addTo(map);
         L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
-
         map.on('click', handleMapClick);
-        setInterval(() => { map.invalidateSize(); }, 500);
-    }
-
-    function refreshMap() {
-        if(map) { map.invalidateSize(); if(map.getZoom() < 10) map.setView([22.997, 120.211], 13); }
+        setInterval(() => map.invalidateSize(), 500);
     }
 
     function switchMode(mode) {
@@ -290,196 +227,88 @@
         document.getElementById('panel-segment').classList.toggle('active', mode === 'segment');
         document.getElementById('table-point').classList.toggle('active', mode === 'point');
         document.getElementById('table-segment').classList.toggle('active', mode === 'segment');
-        clearTempMapLayers();
-        updateStatusCounts();
+        clearTempMapLayers(); updateStatusCounts();
     }
 
     function clearTempMapLayers() {
         if(tempPointMarker) map.removeLayer(tempPointMarker);
-        if(segStartMarker) map.removeLayer(segStartMarker);
-        if(segEndMarker) map.removeLayer(segEndMarker);
+        segMarkers.forEach(m => map.removeLayer(m));
         if(segLine) map.removeLayer(segLine);
-        
+        segMarkers = []; segCoords = []; segLine = null; tempPointMarker = null;
         document.getElementById('pt-coords').value = "";
-        document.getElementById('seg-startCoords').value = "";
-        document.getElementById('seg-endCoords').value = "";
-        segClickCount = 0;
+        document.getElementById('seg-nodeCount').value = "目前：0 個點";
     }
 
     function handleMapClick(e) {
-        const lat = e.latlng.lat.toFixed(6);
-        const lng = e.latlng.lng.toFixed(6);
-        const coordStr = `${lat}, ${lng}`;
-
+        const lat = e.latlng.lat.toFixed(6), lng = e.latlng.lng.toFixed(6);
         if (currentMode === 'point') {
-            if (!tempPointMarker) { tempPointMarker = L.marker([lat, lng]).addTo(map); }
-            else { tempPointMarker.setLatLng([lat, lng]); }
-            document.getElementById('pt-coords').value = coordStr;
-        } 
-        else if (currentMode === 'segment') {
-            if (segClickCount === 0 || segClickCount === 2) {
-                clearTempMapLayers();
-                segStartMarker = L.circleMarker([lat, lng], {color: 'green', radius: 8}).addTo(map);
-                document.getElementById('seg-startCoords').value = coordStr;
-                segClickCount = 1;
-            } else if (segClickCount === 1) {
-                segEndMarker = L.circleMarker([lat, lng], {color: 'red', radius: 8}).addTo(map);
-                document.getElementById('seg-endCoords').value = coordStr;
-                const startPos = segStartMarker.getLatLng();
-                segLine = L.polyline([startPos, [lat, lng]], {color: '#D05A6E', weight: 4, dashArray: '5, 5'}).addTo(map);
-                segClickCount = 2;
-            }
+            if (!tempPointMarker) tempPointMarker = L.marker([lat, lng]).addTo(map);
+            else tempPointMarker.setLatLng([lat, lng]);
+            document.getElementById('pt-coords').value = `${lat}, ${lng}`;
+        } else {
+            const m = L.circleMarker([lat, lng], {color: '#D05A6E', radius: 6, fillOpacity: 0.8}).addTo(map);
+            segMarkers.push(m); segCoords.push([lat, lng]);
+            if (segLine) map.removeLayer(segLine);
+            if (segCoords.length > 1) segLine = L.polyline(segCoords, {color: '#D05A6E', weight: 5}).addTo(map);
+            document.getElementById('seg-nodeCount').value = `目前：${segCoords.length} 個點`;
         }
     }
 
     function handleDistrictSearch() {
         const val = document.getElementById('districtSearch').value.trim();
-        if (allDistricts[val]) { map.setView(allDistricts[val], 14); selectedDistrictName = val; } 
-        else { selectedDistrictName = ""; }
-    }
-
-    function checkCommonRules() {
-        const unitRaw = document.getElementById('unit').value;
-        const unit = unitRaw.split('.')[1] || unitRaw;
-        const cat = document.getElementById('category').value;
-        if (!cat) { alert("請選取【勤務項目】！"); return false; }
-        if (!selectedDistrictName) { alert("⚠️ 請務必選擇【行政區】！"); document.getElementById('districtSearch').focus(); return false; }
-        return { unit, category: cat, district: selectedDistrictName };
+        if (allDistricts[val]) { map.setView(allDistricts[val], 14); selectedDistrictName = val; }
     }
 
     function addPointData() {
-        const base = checkCommonRules();
-        if(!base) return;
+        const unit = document.getElementById('unit').value.split('.')[1] || document.getElementById('unit').value;
+        const cat = document.getElementById('category').value;
         const loc = document.getElementById('pt-locName').value.trim();
-        const range = document.getElementById('pt-range').value || "30";
         const coords = document.getElementById('pt-coords').value;
-        if (!loc || !coords) { alert("資訊不完整！請在地圖選點並填寫名稱。"); return; }
-        
-        const parts = coords.split(', ');
-        pointDataList.push({ ...base, loc, range, lat: parts[0], lng: parts[1] });
-        renderPointTable(); saveBackups();
-        document.getElementById('pt-locName').value = '';
-        clearTempMapLayers();
+        if (!cat || !selectedDistrictName || !loc || !coords) { alert("請檢查行政區、勤務、名稱與座標是否完整！"); return; }
+        pointDataList.push({ unit, district: selectedDistrictName, category: cat, loc, range: document.getElementById('pt-range').value, lat: coords.split(', ')[0], lng: coords.split(', ')[1] });
+        renderPointTable(); saveBackups(); document.getElementById('pt-locName').value = ''; clearTempMapLayers();
     }
 
     function addSegmentData() {
-        const base = checkCommonRules();
-        if(!base) return;
-
-        const roadName = document.getElementById('seg-roadName').value.trim();
-        const width = document.getElementById('seg-width').value || "15"; // 新增：抓取路寬
-        const startDesc = document.getElementById('seg-startDesc').value.trim();
-        const endDesc = document.getElementById('seg-endDesc').value.trim();
-        const startCoords = document.getElementById('seg-startCoords').value;
-        const endCoords = document.getElementById('seg-endCoords').value;
-
-        if (!roadName || !startDesc || !endDesc || segClickCount !== 2) { 
-            alert("資訊不完整！請填寫所有名稱，並確認地圖上已標記綠色(起)與紅色(迄)點。"); return; 
-        }
-        
-        segmentDataList.push({ 
-            ...base, roadName, width, startDesc, endDesc, // 新增 width
-            startLat: startCoords.split(', ')[0], startLng: startCoords.split(', ')[1],
-            endLat: endCoords.split(', ')[0], endLng: endCoords.split(', ')[1]
-        });
-        
-        renderSegmentTable(); saveBackups();
-        document.getElementById('seg-roadName').value = '';
-        document.getElementById('seg-startDesc').value = '';
-        document.getElementById('seg-endDesc').value = '';
-        clearTempMapLayers();
+        const unit = document.getElementById('unit').value.split('.')[1] || document.getElementById('unit').value;
+        const cat = document.getElementById('category').value;
+        const road = document.getElementById('seg-roadName').value.trim();
+        if (!cat || !selectedDistrictName || !road || segCoords.length < 2) { alert("請確保有名稱並在地圖至少描繪兩個點！"); return; }
+        const coordString = segCoords.map(c => `${c[0]},${c[1]}`).join(' | ');
+        segmentDataList.push({ unit, district: selectedDistrictName, category: cat, roadName: road, width: document.getElementById('seg-width').value, nodeCount: segCoords.length, trajectory: coordString });
+        renderSegmentTable(); saveBackups(); document.getElementById('seg-roadName').value = ''; clearTempMapLayers();
     }
 
     function renderPointTable() {
-        const tbody = document.getElementById('tbody-point');
-        tbody.innerHTML = pointDataList.map((item, i) => `<tr>
-            <td style="color:#999">${i+1}</td><td><b>${item.unit}</b></td><td><span class="cat-tag">${item.district}</span></td>
-            <td>${item.category}</td><td>${item.loc}</td><td>${item.range}m</td>
-            <td style="font-family: monospace;">${item.lat}</td><td style="font-family: monospace;">${item.lng}</td>
-            <td style="text-align:center"><button onclick="deleteData('point', ${i})" style="color:var(--main-rose); border:none; background:none; font-weight:bold; cursor:pointer;">刪除</button></td>
-        </tr>`).join('');
+        document.getElementById('tbody-point').innerHTML = pointDataList.map((d, i) => `<tr><td>${i+1}</td><td>${d.unit}</td><td><span class="cat-tag">${d.district}</span></td><td>${d.category}</td><td>${d.loc}</td><td>${d.range}m</td><td>${d.lat},${d.lng}</td><td style="text-align:center"><button onclick="deleteData('point',${i})" style="color:var(--main-rose);border:none;background:none;cursor:pointer">刪除</button></td></tr>`).join('');
         updateStatusCounts();
     }
 
     function renderSegmentTable() {
-        const tbody = document.getElementById('tbody-segment');
-        tbody.innerHTML = segmentDataList.map((item, i) => `<tr>
-            <td style="color:#999">${i+1}</td><td><b>${item.unit}</b></td><td><span class="cat-tag">${item.district}</span></td>
-            <td>${item.category}</td><td><b>${item.roadName}</b></td>
-            <td>${item.width}m</td> <td>${item.startDesc}</td><td style="font-size:0.85rem; color:#666;">${item.startLat}, ${item.startLng}</td>
-            <td>${item.endDesc}</td><td style="font-size:0.85rem; color:#666;">${item.endLat}, ${item.endLng}</td>
-            <td style="text-align:center"><button onclick="deleteData('segment', ${i})" style="color:var(--main-rose); border:none; background:none; font-weight:bold; cursor:pointer;">刪除</button></td>
-        </tr>`).join('');
+        document.getElementById('tbody-segment').innerHTML = segmentDataList.map((d, i) => `<tr><td>${i+1}</td><td>${d.unit}</td><td><span class="cat-tag">${d.district}</span></td><td>${d.category}</td><td>${d.roadName}</td><td>${d.width}m</td><td>${d.nodeCount}</td><td style="font-size:0.75rem; color:#888;">${d.trajectory.substring(0,30)}...</td><td style="text-align:center"><button onclick="deleteData('segment',${i})" style="color:var(--main-rose);border:none;background:none;cursor:pointer">刪除</button></td></tr>`).join('');
         updateStatusCounts();
     }
 
-    function updateStatusCounts() {
-        const count = currentMode === 'point' ? pointDataList.length : segmentDataList.length;
-        document.getElementById('dataCount').innerText = count;
+    function deleteData(type, i) {
+        if(type==='point') pointDataList.splice(i,1); else segmentDataList.splice(i,1);
+        renderPointTable(); renderSegmentTable(); saveBackups();
     }
 
-    function deleteData(type, index) {
-        if(type === 'point') { pointDataList.splice(index, 1); renderPointTable(); }
-        else { segmentDataList.splice(index, 1); renderSegmentTable(); }
-        saveBackups();
-    }
-
-    function clearCurrentData() {
-        if (confirm(`⚠️ 確定清空目前的【${currentMode === 'point' ? '路口' : '路段'}】紀錄？`)) {
-            if(currentMode === 'point') { pointDataList = []; renderPointTable(); }
-            else { segmentDataList = []; renderSegmentTable(); }
-            saveBackups();
-        }
-    }
-
-    function saveBackups() {
-        localStorage.setItem('tainan_police_pt', JSON.stringify(pointDataList));
-        localStorage.setItem('tainan_police_seg', JSON.stringify(segmentDataList));
-        document.getElementById('backup-status').innerText = '狀態已保存 ✓';
-        setTimeout(() => { document.getElementById('backup-status').innerText = ''; }, 2000);
-    }
-
-    function loadBackups() {
-        const pts = localStorage.getItem('tainan_police_pt');
-        const segs = localStorage.getItem('tainan_police_seg');
-        if (pts) pointDataList = JSON.parse(pts);
-        if (segs) segmentDataList = JSON.parse(segs);
-        renderPointTable(); renderSegmentTable();
-    }
+    function updateStatusCounts() { document.getElementById('dataCount').innerText = currentMode === 'point' ? pointDataList.length : segmentDataList.length; }
+    function saveBackups() { localStorage.setItem('tainan_pt_v11', JSON.stringify(pointDataList)); localStorage.setItem('tainan_seg_v11', JSON.stringify(segmentDataList)); }
+    function loadBackups() { pointDataList = JSON.parse(localStorage.getItem('tainan_pt_v11')||'[]'); segmentDataList = JSON.parse(localStorage.getItem('tainan_seg_v11')||'[]'); renderPointTable(); renderSegmentTable(); }
+    function refreshMap() { map.invalidateSize(); }
+    function clearCurrentData() { if(confirm('確定清空？')) { if(currentMode==='point') pointDataList=[]; else segmentDataList=[]; renderPointTable(); renderSegmentTable(); saveBackups(); }}
 
     function exportCurrentExcel() {
         const list = currentMode === 'point' ? pointDataList : segmentDataList;
-        if (list.length === 0) { alert("目前分頁清單為空，無法匯出。"); return; }
-        
-        let exportData = [];
-        let sheetName = "";
-        let fileSuffix = "";
-
-        if (currentMode === 'point') {
-            sheetName = "路口處所結果"; fileSuffix = "路口座標採集";
-            exportData = list.map((item, index) => ({
-                "編號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, 
-                "位置名稱": item.loc, "範圍(公尺)": item.range, "緯度": item.lat, "經度": item.lng
-            }));
-        } else {
-            sheetName = "路段採集結果"; fileSuffix = "路段座標採集";
-            exportData = list.map((item, index) => ({
-                "編號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, 
-                "路段主名稱": item.roadName, "路段寬度(公尺)": item.width, // 新增匯出
-                "起點描述": item.startDesc, "起點緯度": item.startLat, "起點經度": item.startLng,
-                "迄點描述": item.endDesc, "迄點緯度": item.endLat, "迄點經度": item.endLng
-            }));
-        }
-
-        const ws = XLSX.utils.json_to_sheet(exportData);
+        if (!list.length) return;
+        const ws = XLSX.utils.json_to_sheet(list);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, sheetName);
-        
-        const unitName = document.getElementById('unit').value.split('.')[1] || document.getElementById('unit').value;
-        const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,"");
-        XLSX.writeFile(wb, `${unitName}_臺南${fileSuffix}_${dateStr}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "採集結果");
+        const name = document.getElementById('unit').value.split('.')[1] || "採集";
+        XLSX.writeFile(wb, `${name}_${currentMode==='point'?'路口':'路段'}_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 </script>
-
 </body>
 </html>
