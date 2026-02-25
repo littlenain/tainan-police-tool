@@ -56,6 +56,9 @@
         }
         #map { width: 100%; height: 100%; z-index: 1; }
 
+        /* 自訂圖釘樣式清除 Leaflet 預設背景 */
+        .custom-pin { background: transparent; border: none; }
+
         .card { background: #ffffff; border: 1.5px solid #EAEAEA; border-radius: 12px; padding: 20px; box-sizing: border-box; }
         .card-header { font-weight: 800; font-size: 1.15rem; color: var(--main-rose-dark); margin-bottom: 12px; border-left: 6px solid var(--main-rose); padding-left: 10px; }
         
@@ -248,7 +251,17 @@
     let selectedDistrictName = ""; 
     let tempPointMarker = null;
     
-    // 多節點軌跡專用變數
+    // 自訂 SVG 胭脂紅水滴圖釘 (路口模式專用)
+    const customPinIcon = L.divIcon({
+        className: 'custom-pin',
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="36" height="54">
+                 <path d="M12 0C5.373 0 0 5.373 0 12c0 8.4 12 24 12 24s12-15.6 12-24c0-6.627-5.373-12-12-12zm0 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12z" 
+                       fill="#D05A6E" stroke="#FFFFFF" stroke-width="2" style="filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.3));"/>
+               </svg>`,
+        iconSize: [36, 54],
+        iconAnchor: [18, 54] // 設定錨點在圖釘最下方尖端
+    });
+
     let segMarkers = [];
     let segCoords = [];
     let segLine = null;
@@ -291,8 +304,6 @@
 
     function clearTempMapLayers() {
         if(tempPointMarker) map.removeLayer(tempPointMarker);
-        
-        // 清除多節點陣列與線段
         segMarkers.forEach(m => map.removeLayer(m));
         if(segLine) map.removeLayer(segLine);
         
@@ -310,17 +321,19 @@
         const coordStr = `${lat}, ${lng}`;
 
         if (currentMode === 'point') {
-            if (!tempPointMarker) { tempPointMarker = L.marker([lat, lng]).addTo(map); }
-            else { tempPointMarker.setLatLng([lat, lng]); }
+            // 使用新版專屬圖釘
+            if (!tempPointMarker) { 
+                tempPointMarker = L.marker([lat, lng], {icon: customPinIcon}).addTo(map); 
+            } else { 
+                tempPointMarker.setLatLng([lat, lng]); 
+            }
             document.getElementById('pt-coords').value = coordStr;
         } 
         else if (currentMode === 'segment') {
-            // 加入節點圓點
             const m = L.circleMarker([lat, lng], {color: '#D05A6E', radius: 6, fillOpacity: 0.8}).addTo(map);
             segMarkers.push(m);
             segCoords.push([lat, lng]);
             
-            // 重繪軌跡線
             if (segLine) map.removeLayer(segLine);
             if (segCoords.length > 1) {
                 segLine = L.polyline(segCoords, {color: '#D05A6E', weight: 5}).addTo(map);
@@ -370,7 +383,6 @@
             alert("資訊不完整！請填寫名稱，並在地圖上至少點選2個點描繪軌跡。"); return; 
         }
         
-        // 將陣列格式化為字串存檔
         const coordString = segCoords.map(c => `${c[0]},${c[1]}`).join(' | ');
 
         segmentDataList.push({ 
@@ -396,7 +408,6 @@
     function renderSegmentTable() {
         const tbody = document.getElementById('tbody-segment');
         tbody.innerHTML = segmentDataList.map((item, i) => {
-            // 如果軌跡字串太長，在網頁上截斷顯示以免表格破版
             const shortTraj = item.trajectory.length > 35 ? item.trajectory.substring(0, 35) + '...' : item.trajectory;
             return `<tr>
                 <td style="color:#999">${i+1}</td><td><b>${item.unit}</b></td><td><span class="cat-tag">${item.district}</span></td>
@@ -451,7 +462,6 @@
         let sheetName = "";
         let fileSuffix = "";
 
-        // 在此強制定義中文表頭鍵值，確保匯出時與網頁表格一致
         if (currentMode === 'point') {
             sheetName = "路口處所結果"; fileSuffix = "路口座標採集";
             exportData = list.map((item, index) => ({
