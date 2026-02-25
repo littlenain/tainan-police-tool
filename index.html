@@ -76,11 +76,10 @@
         
         .table-container { width: 100%; overflow-x: auto; border-radius: 10px; display: none; }
         .table-container.active { display: block; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1000px; }
-        th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1050px; }
+        th { background: #F9F9F9; color: var(--main-rose-dark); padding: 15px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--main-rose-light); white-space: nowrap; }
         td { padding: 15px; border-bottom: 1px solid #F0F0F0; font-size: 1rem; }
 
-        /* 控制面板顯示隱藏 */
         .mode-panel { display: none; }
         .mode-panel.active { display: block; }
 
@@ -103,7 +102,7 @@
     
     <div class="tabs">
         <button class="tab-btn active" id="tab-point" onclick="switchMode('point')">📍 路口/處所 (單點)</button>
-        <button class="tab-btn" id="tab-segment" onclick="switchMode('segment')">🛣️ 路段採集 (起迄點)</button>
+        <button class="tab-btn" id="tab-segment" onclick="switchMode('segment')">🛣️ 路段採集 (線段)</button>
     </div>
 
     <div class="content-layout">
@@ -174,6 +173,10 @@
                     <label>路段主名稱</label>
                     <input type="text" id="seg-roadName" placeholder="如：中華北路一段">
                 </div>
+                <div class="form-group">
+                    <label>路段寬度 (公尺)</label>
+                    <input type="number" id="seg-width" value="15" placeholder="預設 15 公尺">
+                </div>
                 <div class="tip-box" style="margin-bottom: 15px;">
                     <b>操作說明：</b><br>1. 點地圖標記【起點】<br>2. 點地圖標記【迄點】
                 </div>
@@ -229,7 +232,7 @@
                 <tr>
                     <th style="width:40px">#</th>
                     <th>單位</th><th>行政區</th><th>勤務項目</th><th>路段主名稱</th>
-                    <th>起點描述</th><th>起點座標</th><th>迄點描述</th><th>迄點座標</th>
+                    <th>路寬(m)</th> <th>起點描述</th><th>起點座標</th><th>迄點描述</th><th>迄點座標</th>
                     <th style="width:60px; text-align:center">操作</th>
                 </tr>
             </thead>
@@ -242,23 +245,18 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    /* --- 系統變數 --- */
-    let currentMode = 'point'; // 'point' 或是 'segment'
-    
-    // 資料陣列分離
+    let currentMode = 'point'; 
     let pointDataList = [];
     let segmentDataList = [];
     
-    // 地圖與標記變數
     let map;
     let selectedDistrictName = ""; 
     let tempPointMarker = null;
     
-    // 路段專屬變數
     let segStartMarker = null;
     let segEndMarker = null;
     let segLine = null;
-    let segClickCount = 0; // 0: 等待起點, 1: 等待迄點, 2: 已完成
+    let segClickCount = 0; 
 
     const TAINAN_BOUNDS = [[22.88, 120.03], [23.41, 120.65]];
     const allDistricts = { "新營區": [23.308, 120.317], "鹽水區": [23.320, 120.266], "白河區": [23.351, 120.415], "柳營區": [23.277, 120.311], "後壁區": [23.365, 120.362], "東山區": [23.323, 120.404], "麻豆區": [23.181, 120.252], "下營區": [23.223, 120.263], "六甲區": [23.231, 120.347], "官田區": [23.181, 120.318], "大內區": [23.119, 120.402], "佳里區": [23.161, 120.176], "學甲區": [23.232, 120.180], "西港區": [23.123, 120.203], "七股區": [23.141, 120.138], "將軍區": [23.203, 120.154], "北門區": [23.268, 120.124], "新化區": [23.033, 120.334], "善化區": [23.131, 120.295], "新市區": [23.078, 120.301], "安定區": [23.121, 120.236], "山上區": [23.102, 120.354], "玉井區": [23.125, 120.463], "楠西區": [23.174, 120.512], "南化區": [23.045, 120.543], "左鎮區": [23.012, 120.415], "仁德區": [22.971, 120.252], "歸仁區": [22.968, 120.285], "關廟區": [22.961, 120.328], "龍崎區": [22.965, 120.360], "永康區": [23.025, 120.254], "東區": [22.985, 120.224], "南區": [22.960, 120.183], "北區": [23.006, 120.211], "安南區": [23.048, 120.185], "安平區": [23.001, 120.161], "中西區": [22.991, 120.202] };
@@ -284,21 +282,14 @@
         if(map) { map.invalidateSize(); if(map.getZoom() < 10) map.setView([22.997, 120.211], 13); }
     }
 
-    // --- 切換模式 (Point / Segment) ---
     function switchMode(mode) {
         currentMode = mode;
-        
-        // 切換頁籤樣式
         document.getElementById('tab-point').classList.toggle('active', mode === 'point');
         document.getElementById('tab-segment').classList.toggle('active', mode === 'segment');
-        
-        // 切換面板與表格
         document.getElementById('panel-point').classList.toggle('active', mode === 'point');
         document.getElementById('panel-segment').classList.toggle('active', mode === 'segment');
         document.getElementById('table-point').classList.toggle('active', mode === 'point');
         document.getElementById('table-segment').classList.toggle('active', mode === 'segment');
-
-        // 清除地圖上的暫存標記
         clearTempMapLayers();
         updateStatusCounts();
     }
@@ -315,7 +306,6 @@
         segClickCount = 0;
     }
 
-    // --- 地圖點擊邏輯 ---
     function handleMapClick(e) {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
@@ -328,16 +318,13 @@
         } 
         else if (currentMode === 'segment') {
             if (segClickCount === 0 || segClickCount === 2) {
-                // 設為起點 (如果已經完成一條，點擊則重新開始)
                 clearTempMapLayers();
                 segStartMarker = L.circleMarker([lat, lng], {color: 'green', radius: 8}).addTo(map);
                 document.getElementById('seg-startCoords').value = coordStr;
                 segClickCount = 1;
             } else if (segClickCount === 1) {
-                // 設為迄點並畫線
                 segEndMarker = L.circleMarker([lat, lng], {color: 'red', radius: 8}).addTo(map);
                 document.getElementById('seg-endCoords').value = coordStr;
-                
                 const startPos = segStartMarker.getLatLng();
                 segLine = L.polyline([startPos, [lat, lng]], {color: '#D05A6E', weight: 4, dashArray: '5, 5'}).addTo(map);
                 segClickCount = 2;
@@ -345,7 +332,6 @@
         }
     }
 
-    // --- 行政區跳轉與防呆 ---
     function handleDistrictSearch() {
         const val = document.getElementById('districtSearch').value.trim();
         if (allDistricts[val]) { map.setView(allDistricts[val], 14); selectedDistrictName = val; } 
@@ -361,31 +347,27 @@
         return { unit, category: cat, district: selectedDistrictName };
     }
 
-    // --- 新增路口 (Point) ---
     function addPointData() {
         const base = checkCommonRules();
         if(!base) return;
-
         const loc = document.getElementById('pt-locName').value.trim();
         const range = document.getElementById('pt-range').value || "30";
         const coords = document.getElementById('pt-coords').value;
-
         if (!loc || !coords) { alert("資訊不完整！請在地圖選點並填寫名稱。"); return; }
         
         const parts = coords.split(', ');
         pointDataList.push({ ...base, loc, range, lat: parts[0], lng: parts[1] });
-        
         renderPointTable(); saveBackups();
         document.getElementById('pt-locName').value = '';
         clearTempMapLayers();
     }
 
-    // --- 新增路段 (Segment) ---
     function addSegmentData() {
         const base = checkCommonRules();
         if(!base) return;
 
         const roadName = document.getElementById('seg-roadName').value.trim();
+        const width = document.getElementById('seg-width').value || "15"; // 新增：抓取路寬
         const startDesc = document.getElementById('seg-startDesc').value.trim();
         const endDesc = document.getElementById('seg-endDesc').value.trim();
         const startCoords = document.getElementById('seg-startCoords').value;
@@ -396,7 +378,7 @@
         }
         
         segmentDataList.push({ 
-            ...base, roadName, startDesc, endDesc, 
+            ...base, roadName, width, startDesc, endDesc, // 新增 width
             startLat: startCoords.split(', ')[0], startLng: startCoords.split(', ')[1],
             endLat: endCoords.split(', ')[0], endLng: endCoords.split(', ')[1]
         });
@@ -408,7 +390,6 @@
         clearTempMapLayers();
     }
 
-    // --- 渲染表格 ---
     function renderPointTable() {
         const tbody = document.getElementById('tbody-point');
         tbody.innerHTML = pointDataList.map((item, i) => `<tr>
@@ -425,7 +406,7 @@
         tbody.innerHTML = segmentDataList.map((item, i) => `<tr>
             <td style="color:#999">${i+1}</td><td><b>${item.unit}</b></td><td><span class="cat-tag">${item.district}</span></td>
             <td>${item.category}</td><td><b>${item.roadName}</b></td>
-            <td>${item.startDesc}</td><td style="font-size:0.85rem; color:#666;">${item.startLat}, ${item.startLng}</td>
+            <td>${item.width}m</td> <td>${item.startDesc}</td><td style="font-size:0.85rem; color:#666;">${item.startLat}, ${item.startLng}</td>
             <td>${item.endDesc}</td><td style="font-size:0.85rem; color:#666;">${item.endLat}, ${item.endLng}</td>
             <td style="text-align:center"><button onclick="deleteData('segment', ${i})" style="color:var(--main-rose); border:none; background:none; font-weight:bold; cursor:pointer;">刪除</button></td>
         </tr>`).join('');
@@ -451,7 +432,6 @@
         }
     }
 
-    // --- 備份與匯出 ---
     function saveBackups() {
         localStorage.setItem('tainan_police_pt', JSON.stringify(pointDataList));
         localStorage.setItem('tainan_police_seg', JSON.stringify(segmentDataList));
@@ -485,7 +465,8 @@
             sheetName = "路段採集結果"; fileSuffix = "路段座標採集";
             exportData = list.map((item, index) => ({
                 "編號": index + 1, "單位": item.unit, "行政區": item.district, "勤務項目": item.category, 
-                "路段主名稱": item.roadName, "起點描述": item.startDesc, "起點緯度": item.startLat, "起點經度": item.startLng,
+                "路段主名稱": item.roadName, "路段寬度(公尺)": item.width, // 新增匯出
+                "起點描述": item.startDesc, "起點緯度": item.startLat, "起點經度": item.startLng,
                 "迄點描述": item.endDesc, "迄點緯度": item.endLat, "迄點經度": item.endLng
             }));
         }
